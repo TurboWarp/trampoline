@@ -1,6 +1,10 @@
 const RequestQueue = require('./RequestQueue');
 const APIError = require('./APIError');
+const ScratchUtils = require('./ScratchUtils');
 
+/**
+ * API Wrapper for the public Scratch API: https://api.scratch.mit.edu/
+ */
 class ScratchWrapper {
   constructor() {
     this.requestQueue = new RequestQueue(50);
@@ -10,15 +14,13 @@ class ScratchWrapper {
   }
 
   verifyIdentifier(id) {
-    const idNum = +id;
-    const fractional = idNum - Math.floor(idNum);
-    if (Number.isNaN(idNum) || !Number.isFinite(idNum) || idNum < 0 || fractional !== 0) {
-      throw new APIError(APIError.BAD_REQUEST, 'Invalid ID');
+    if (!ScratchUtils.isValidIdentifier(id)) {
+      throw new APIError(APIError.BAD_REQUEST, 'Invalid identifier');
     }
   }
 
-  verifyUsername(name) {
-    if (!/^[a-zA-Z-_0-9]{1,30}$/.test(name)) {
+  verifyUsername(username) {
+    if (!ScratchUtils.isValidUsername(username)) {
       throw new APIError(APIError.BAD_REQUEST, 'Invalid username');
     }
   }

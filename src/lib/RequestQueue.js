@@ -1,6 +1,6 @@
 const https = require('https');
 const request = require('request');
-const logger = require('./logger');
+const logger = require('../logger');
 const APIError = require('./APIError');
 
 class RequestQueue {
@@ -10,7 +10,6 @@ class RequestQueue {
     this.processing = false;
     this.throttle = throttle;
     this.maxBacklog = 100;
-    this.agent = new https.Agent({ keepAlive: true });
   }
 
   now() {
@@ -33,13 +32,17 @@ class RequestQueue {
     return this.backlog.length >= this.maxBacklog;
   }
 
+  getHeaders() {
+    return {};
+  }
+
   processNextRequest() {
     if (this.backlogEmpty()) {
-      throw new APIError(APIError.INTERNAL_ERROR, 'Cannot process next request; nothing in queue');
+      throw new APIError(APIError.INTERNAL_ERROR, 'Cannot process next request: nothing in queue');
     }
     const { url, callback, options } = this.backlog.shift();
     this.lastRequest = this.now();
-    request.get(url, { ...options, agent: this.agent }, (err, res, body) => {
+    request.get(url, this.getRequestOptions(options), (err, res, body) => {
       if (err) {
         callback(new APIError(APIError.INTERNAL_ERROR, err.code + ': ' + err.message), null);
         return;
@@ -51,13 +54,22 @@ class RequestQueue {
         default: callback(new APIError(APIError.UPSTREAM_ERROR, 'HTTP Status Code: ' + res.statusCode)); break;
       }
 
-      logger.debug('RequestQueue processed request in', this.timeSinceLastRequest(), 'next request in', this.timeUntilNextRequest());
+      logger.debug('RequestQueue: processed request: ms', this.timeSinceLastRequest(), 'status', res.statusCode, 'next', this.timeUntilNextRequest());
       if (this.backlogEmpty()) {
         this.stopProcessingRequests();
       } else {
         this.scheduleNextRequest(this.timeUntilNextRequest());
       }
     });
+  }
+
+  getRequestOptions(options) {
+    const headers = this.getHeaders();
+    return {
+      ...options,
+      headers,
+      agent: RequestQueue.requestAgent,
+    };
   }
 
   scheduleNextRequest(delay) {
@@ -97,5 +109,7 @@ class RequestQueue {
     });
   }
 }
+
+RequestQueue.requestAgent = new https.Agent({ keepAlive: true });
 
 module.exports = RequestQueue;
