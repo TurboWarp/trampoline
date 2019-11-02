@@ -19,7 +19,7 @@ class Cache {
    */
   constructor(ttl) {
     /** The time, in milliseconds, for cache values to be valid for. */
-    this.ttl = ttl;
+    this.ttl = ttl || 1000 * 60;
     /** Maximum number of values to cache before the least recently accessed values are evicted. */
     this.maxEntries = 1000;
     /** @type {CacheEntry[]} */
@@ -77,6 +77,20 @@ class Cache {
     } else {
       return firstKey === otherKey;
     }
+  }
+
+  /**
+   * Determine if a key exists and is not expired in this cache.
+   * @param {Key} key
+   * @returns {Promise<boolean>}
+   */
+  async has(key) {
+    for (const entry of this.entries) {
+      if (this.compareKeys(key, entry.key) && !this.isExpired(entry)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
