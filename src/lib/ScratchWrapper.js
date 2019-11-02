@@ -15,13 +15,13 @@ class ScratchWrapper {
 
   verifyIdentifier(id) {
     if (!ScratchUtils.isValidIdentifier(id)) {
-      throw new APIError(APIError.BAD_REQUEST, 'Invalid identifier');
+      throw new APIError.BadRequest('Invalid identifier');
     }
   }
 
   verifyUsername(username) {
     if (!ScratchUtils.isValidUsername(username)) {
-      throw new APIError(APIError.BAD_REQUEST, 'Invalid username');
+      throw new APIError.BadRequest('Invalid username');
     }
   }
 
@@ -30,9 +30,12 @@ class ScratchWrapper {
       .then((response) => {
         if ('code' in response && 'message' in response) {
           switch (response.code) {
-            case 'NotFound': throw new APIError(APIError.NOT_FOUND, 'Resource does not exist');
-            case 'ResourceNotFound': throw new APIError(APIError.INTERNAL_ERROR, 'Possible routing failure');
-            default: throw new APIError(APIError.UPSTREAM_ERROR, 'Upstream or unknown error');
+            // https://api.scratch.mit.edu/projects/0
+            case 'NotFound': throw new APIError.NotFound('Resource does not exist');
+            // https://api.scratch.mit.edu/slkdjfslkdf
+            case 'ResourceNotFound': throw new APIError.InternalError('Possible routing failure');
+            // Anything else
+            default: throw new APIError.UpstreamError('Upstream or unknown error');
           }
         }
         return response;

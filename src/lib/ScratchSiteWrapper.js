@@ -13,13 +13,13 @@ class ScratchSiteWrapper {
 
   verifyIdentifier(id) {
     if (!ScratchUtils.isValidIdentifier(id)) {
-      throw new APIError(APIError.BAD_REQUEST, 'Invalid identifier');
+      throw new APIError.BadRequest('Invalid identifier');
     }
   }
 
   verifyPage(page) {
     if (!ScratchUtils.isValidPage(page)) {
-      throw new APIError(APIError.BAD_REQUEST, 'Invalid page');
+      throw new APIError.BadRequest('Invalid page');
     }
   }
 

@@ -38,20 +38,20 @@ class RequestQueue {
 
   processNextRequest() {
     if (this.backlogEmpty()) {
-      throw new APIError(APIError.INTERNAL_ERROR, 'Cannot process next request: nothing in queue');
+      throw new APIError.InternalError('Cannot process next request: nothing in queue');
     }
     const { url, callback, options } = this.backlog.shift();
     this.lastRequest = this.now();
     request.get(url, this.getRequestOptions(options), (err, res, body) => {
       if (err) {
-        callback(new APIError(APIError.INTERNAL_ERROR, err.code + ': ' + err.message), null);
+        callback(new APIError.InternalError(err.code + ': ' + err.message), null);
         return;
       }
 
       switch (res.statusCode) {
         case 200: callback(null, body); break;
-        case 404: callback(new APIError(APIError.NOT_FOUND, 'Resource does not exist')); break;
-        default: callback(new APIError(APIError.UPSTREAM_ERROR, 'HTTP Status Code: ' + res.statusCode)); break;
+        case 404: callback(new APIError.NotFound('Resource does not exist')); break;
+        default: callback(new APIError.UpstreamError('HTTP Status Code: ' + res.statusCode)); break;
       }
 
       logger.debug('RequestQueue: processed request: ms', this.timeSinceLastRequest(), 'status', res.statusCode, 'next', this.timeUntilNextRequest());
@@ -88,7 +88,7 @@ class RequestQueue {
   queue(url, options, callback) {
     logger.debug('RequestQueue: queue url:', url, 'backlog size:', this.backlog.length);
     if (this.backlogFilled()) {
-      callback(new APIError(APIError.TOO_MANY_REQUESTS, 'Request backlog is filled.'), null);
+      callback(new APIError.TooManyRequests('Request backlog is filled.'), null);
       return;
     }
     this.backlog.push({ url: url, options: options, callback: callback });

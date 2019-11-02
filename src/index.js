@@ -3,8 +3,14 @@ const express = require('express');
 const app = express();
 const config = require('./config');
 
+app.set('case sensitive routing', true);
+app.set('strict routing', true);
+app.set('json escape', true);
+app.set('x-powered-by', false);
+
 app.use((req, res, next) => {
-  res.removeHeader('X-Powered-By');
+  res.header('Content-Security-Policy', 'default-src \'self\'')
+  res.header('X-Frame-Options', 'deny');
   next();
 });
 

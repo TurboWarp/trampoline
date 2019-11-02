@@ -1,8 +1,9 @@
 const express = require('express');
-const ScratchSiteWrapper = require('../lib/ScratchSiteWrapper');
+const CachingScratchSiteWrapper = require('../lib/caching/CachingScratchSiteWrapper');
+const APIError = require('../lib/APIError');
 
 const router = express.Router();
-const site = new ScratchSiteWrapper();
+const site = new CachingScratchSiteWrapper();
 
 // The site-api generally returns HTML. To make sure browsers do not attempt to display this as HTML, we:
 //  - set Content-Type to something other than HTML
@@ -18,8 +19,16 @@ router.use((req, res, next) => {
 
 router.get('/projects/in/:studio/:page', (req, res) => {
   res.contentType('text/plain');
-  site.getProjectsInStudio(req.params.studio, req.params.page).then((data) => {
-    res.end(data);
+  site.getProjectsInStudioCached(req.params.studio, req.params.page).then((data) => {
+    const [cached, entry] = data;
+    res.header('Expires', entry.getExpiresDate());
+    res.end(entry.value);
+  }).catch((err) => {
+    const status = APIError.getStatus(err);
+    const errorCode = APIError.getCode(err);
+    const message = APIError.getMessage(err);
+    res.status(status);
+    res.end(`Error: ${errorCode} (${status}): ${message}`);
   });
 });
 
