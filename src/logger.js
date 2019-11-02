@@ -1,6 +1,6 @@
 class Logger {
   constructor() {
-    this.debugEnabled = process.env.NODE_ENV === 'development';
+    this.debugEnabled = false;
   }
 
   /**

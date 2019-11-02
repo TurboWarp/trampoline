@@ -1,5 +1,6 @@
 const Cache = require('./Cache');
 const CacheEntry = require('./CacheEntry');
+const logger = require('../../logger');
 
 /**
  * @template T
@@ -22,8 +23,10 @@ class ComputedCache extends Cache {
   async computeIfMissing(key) {
     const cachedValue = await this.get(key);
     if (cachedValue) {
+      logger.debug('ComputedCache: from cache: key:', key);
       return [true, cachedValue];
     }
+    logger.debug('ComputedCache: computing: key:', key);
     const newValue = await this.computer(key);
     return [false, await this.put(key, newValue)];
   }

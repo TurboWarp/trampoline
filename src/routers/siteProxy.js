@@ -1,9 +1,11 @@
 const express = require('express');
 const CachingScratchSiteWrapper = require('../lib/caching/CachingScratchSiteWrapper');
 const APIError = require('../lib/APIError');
+const { SITE_API_WRAPPER: config } = require('../config');
 
 const router = express.Router();
 const site = new CachingScratchSiteWrapper();
+site.studioPageCache.ttl = config.studioPageCache;
 
 // The site-api generally returns HTML. To make sure browsers do not attempt to display this as HTML, we:
 //  - set Content-Type to something other than HTML
@@ -18,7 +20,6 @@ router.use((req, res, next) => {
 });
 
 router.get('/projects/in/:studio/:page', (req, res) => {
-  res.contentType('text/plain');
   site.getProjectsInStudioCached(req.params.studio, req.params.page).then((data) => {
     const [cached, entry] = data;
     res.header('Expires', entry.getExpiresDate());
