@@ -1,10 +1,10 @@
 const ScratchSiteWrapper = require('../ScratchSiteWrapper');
-const ComputedCache = require('./ComputedCache');
+const ErrorTolerantComputedCache = require('./ErrorTolerantComputedCache');
 
 class CachingScratchSiteWrapper extends ScratchSiteWrapper {
   constructor() {
     super();
-    this.studioPageCache = new ComputedCache(60000, (key) => this.getProjectsInStudio(key[0], key[1]));
+    this.studioPageCache = new ErrorTolerantComputedCache(60000, (key) => this.getProjectsInStudio(key[0], key[1]));
     this.studioPageCache.tupleKeys = true;
   }
 

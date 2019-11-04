@@ -16,15 +16,7 @@ apiWrapper.studioCache.ttl = config.studioCache;
 function apiResponse(wrapperPromise, res) {
   wrapperPromise.then((data) => {
     const [cached, entry] = data;
-    // Because our entries are known to expire at an exact time, we will use Expires instead of Cache-Control.
-    // With Cache-Control I think you have to do weird max-age stuff that probably won't work as well.
     res.header('Expires', entry.getExpiresDate());
-
-    // Errors are cached as well as success.
-    // Expires is set before we handle errors because we do want to cache errors.
-    const { success, value } = entry.value;
-    if (!success) throw value;
-
     res.json(entry.value);
   }).catch((err) => {
     const status = APIError.getStatus(err);

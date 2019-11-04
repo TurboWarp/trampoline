@@ -11,6 +11,7 @@ class CacheEntry {
     this.key = key;
     this.value = value;
     this.expires = expires;
+    this.error = null;
   }
 
   getExpiresDate() {

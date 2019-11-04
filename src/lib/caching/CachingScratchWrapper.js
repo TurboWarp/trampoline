@@ -1,24 +1,12 @@
 const ScratchWrapper = require('../ScratchWrapper');
-const ComputedCache = require('./ComputedCache');
+const ErrorTolerantComputedCache = require('./ErrorTolerantComputedCache');
 
 class CachingScratchWrapper extends ScratchWrapper {
   constructor() {
     super();
-    this.projectCache = new ComputedCache(60000, this.wrapComputer(this.getProject));
-    this.userCache = new ComputedCache(60000, this.wrapComputer(this.getUser));
-    this.studioCache = new ComputedCache(60000, this.wrapComputer(this.getStudio));
-  }
-
-  wrapComputer(computer) {
-    computer = computer.bind(this);
-    return async (key) => {
-      try {
-        const value = await computer(key);
-        return { success: true, value: value };
-      } catch (e) {
-        return { success: false, value: e };
-      }
-    }
+    this.projectCache = new ErrorTolerantComputedCache(60000, (key) => this.getProject(key));
+    this.userCache = new ErrorTolerantComputedCache(60000, (key) => this.getUser(key));
+    this.studioCache = new ErrorTolerantComputedCache(60000, (key) => this.getStudio(key));
   }
 
   async getProjectCached(key) {
