@@ -33,13 +33,16 @@ APIError.UpstreamError = class extends APIError {
 };
 
 APIError.getStatus = function(error) {
-  return error.status || 500;
+  if (error && error.status) return error.status;
+  return 500;
 };
 APIError.getCode = function(error) {
-  return error.code || 'UNKNOWN';
+  if (error && error.code) return error.code;
+  return 'UNKNOWN';
 };
 APIError.getMessage = function(error) {
-  return error.message || 'unknown';
+  if (error && error.message) return error.message;
+  return '' + error;
 };
 
 module.exports = APIError;
