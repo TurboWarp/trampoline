@@ -32,14 +32,31 @@ APIError.UpstreamError = class extends APIError {
   constructor(message) { super('UPSTREAM_ERROR', 500, message); }
 };
 
+/**
+ * Get the proper HTTP status code to use for an error.
+ * @param {any} error
+ * @returns {number}
+ */
 APIError.getStatus = function(error) {
-  if (error && error.status) return error.status;
+  if (error && typeof error.status === 'number') return error.status;
   return 500;
 };
+
+/**
+ * Get the error code ("BAD_REQUEST", "INTERNAL_ERROR", etc.) for an error.
+ * @param {any} error
+ * @returns {string}
+ */
 APIError.getCode = function(error) {
-  if (error && error.code) return error.code;
+  if (error && typeof error.code === 'string') return error.code;
   return 'UNKNOWN';
 };
+
+/**
+ * Get the user-facing message for an error.
+ * @param {any} error
+ * @returns {string}
+ */
 APIError.getMessage = function(error) {
   if (error && error.message) return error.message;
   return '' + error;

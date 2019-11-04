@@ -9,7 +9,7 @@ const CacheEntry = require('./CacheEntry');
 /**
  * A cache that associates a key with a value for a set duration of time.
  * It has a maximum limit of unique key <-> value pairs, set by maxEntries.
- * Entries that have expired are evicted only when the entries list reaches the maximum length.
+ * Entries that have expired are evicted only when the entries list reaches the maximum length, or when a new entry of the same key in inserted.
  * While the Cache is implemented synchronously, it has an asynchronous interface to allow for future improvements.
  * @template T
  */

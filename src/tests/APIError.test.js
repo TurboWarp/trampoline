@@ -19,7 +19,7 @@ test('getCode', () => {
   expect(APIError.getCode(null)).toBe('UNKNOWN');
   expect(APIError.getCode(undefined)).toBe('UNKNOWN');
   expect(APIError.getCode({help: true})).toBe('UNKNOWN');
-})
+});
 
 test('getStatus', () => {
   expect(APIError.getStatus(new APIError('', 780, ''))).toBe(780);
