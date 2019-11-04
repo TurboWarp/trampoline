@@ -59,6 +59,20 @@ class Cache {
   }
 
   /**
+   * Removes all occurences of a certain key from the entries list.
+   * @param {Key} key The Key to remove
+   */
+  removeEntriesWithKey(key) {
+    let i = this.entries.length;
+    while (i--) {
+      const entry = this.entries[i];
+      if (this.compareKeys(key, entry.key)) {
+        this.entries.splice(i, 1);
+      }
+    }
+  }
+
+  /**
    * Determine whether two keys are identical.
    */
   compareKeys(firstKey, otherKey) {
@@ -118,6 +132,8 @@ class Cache {
    * @param {T} value
    */
   async put(key, value) {
+    // Remove old values, if any.
+    this.removeEntriesWithKey(key);
     const entry = new CacheEntry(key, value, this.now() + this.ttl);
     this.entries.unshift(entry);
     this.evictOverflowEntries();
