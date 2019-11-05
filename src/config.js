@@ -1,16 +1,10 @@
-module.exports.STATIC = {
-  enabled: true,
-};
-module.exports.API_WRAPPER = {
-  enabled: true,
-  projectCache: 1000 * 60 * 60,
-  userCache: 1000 * 60 * 60,
-  studioCache: 1000 * 60 * 60,
-};
-module.exports.SITE_API_WRAPPER = {
-  enabled: true,
-  studioPageCache: 1000 * 60 * 60,
-};
-module.exports.APP = {
-  allowOrigins: '*',
-};
+// To change the config, edit config.private.js.
+// To change the default values, edit config.default.js
+
+const defaults = require('./config.default');
+// @ts-ignore
+const user = require('./config.private');
+const utils = require('./utils');
+utils.deepMerge(defaults, user);
+
+module.exports = defaults;
