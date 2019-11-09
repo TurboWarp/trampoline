@@ -132,6 +132,9 @@ class Cache {
    * @param {T} value
    */
   async put(key, value) {
+    if (isNaN(this.ttl)) {
+      throw new Error('Invalid Cache TTL: ' + this.ttl);
+    }
     // Remove old values, if any.
     this.removeEntriesWithKey(key);
     const entry = new CacheEntry(key, value, this.now() + this.ttl);
