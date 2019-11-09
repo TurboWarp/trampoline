@@ -24,7 +24,7 @@ class ScratchSiteWrapper {
   }
 
   request(url) {
-    return this.requestQueue.queuePromise(url);
+    return this.requestQueue.queuePromise(url, {});
   }
 
   async getProjectsInStudio(studio, page) {

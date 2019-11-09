@@ -17,6 +17,11 @@ module.exports.SITE_API_WRAPPER = {
   studioPageCache: 1000 * 60 * 60,
 };
 
+module.exports.CLOUD_WRAPPER = {
+  enabled: true,
+  logCache: 1000 * 60,
+};
+
 module.exports.APP = {
   allowOrigins: '*',
 };

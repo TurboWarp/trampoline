@@ -33,6 +33,11 @@ if (config.SITE_API_WRAPPER.enabled) {
   app.use('/site-proxy', require('./routers/siteProxy'));
 }
 
+if (config.CLOUD_WRAPPER.enabled) {
+  logger.debug('Enabling Cloud API wrapper');
+  app.use('/cloud-proxy', require('./routers/cloudProxy'));
+}
+
 app.use((req, res) => {
   logger.debug('404:', req.path);
   res.type('text/plain');
