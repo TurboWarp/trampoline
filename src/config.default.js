@@ -24,4 +24,5 @@ module.exports.CLOUD_WRAPPER = {
 
 module.exports.APP = {
   allowOrigins: '*',
+  port: process.env.PORT || 8080,
 };

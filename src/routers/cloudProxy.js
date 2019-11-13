@@ -31,8 +31,8 @@ function apiResponse(wrapperPromise, res) {
 
 router.get('/logs/:project', (req, res) => {
   const project = req.params.project;
-  const limit = req.query.limit || 40;
-  const offset = req.query.offset || 0;
+  const limit = +req.query.limit || 40;
+  const offset = +req.query.offset || 0;
   apiResponse(api.getLogsCached(project, limit, offset), res);
 });
 
