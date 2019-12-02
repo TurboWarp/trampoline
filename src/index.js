@@ -44,4 +44,6 @@ app.use((req, res) => {
   res.status(404).send('404');
 });
 
-app.listen(config.APP.port);
+app.listen(config.APP.port, function() {
+  logger.info('Started on port', config.APP.port);
+});

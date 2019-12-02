@@ -1,6 +1,8 @@
 class Logger {
   constructor() {
     this.debugEnabled = false;
+    this.infoEnabled = true;
+    this.errorEnabled = true;
   }
 
   /**
@@ -10,6 +12,18 @@ class Logger {
   debug(...args) {
     if (this.debugEnabled) {
       console.log('\u001b[90mdebug\u001b[37m', ...args);
+    }
+  }
+
+  info(...args) {
+    if (this.infoEnabled) {
+      console.log('\u001b[92minfo\u001b[37m', ...args);
+    }
+  }
+
+  error(...args) {
+    if (this.errorEnabled) {
+      console.error('\u001b[91merror!\u001b[37m', ...args);
     }
   }
 }
