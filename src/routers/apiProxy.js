@@ -1,11 +1,11 @@
 const express = require('express');
-const ScratchWrapper = require('../lib/caching/CachingScratchWrapper');
+const CachingScratchWrapper = require('../lib/caching/CachingScratchWrapper');
 const CacheEntry = require('../lib/caching/CacheEntry');
 const APIError = require('../lib/APIError');
 const { API_WRAPPER: config } = require('../config');
 
 const router = express.Router();
-const apiWrapper = new ScratchWrapper();
+const apiWrapper = new CachingScratchWrapper();
 apiWrapper.projectCache.ttl = config.projectCache;
 apiWrapper.userCache.ttl = config.userCache;
 apiWrapper.studioCache.ttl = config.studioCache;
@@ -32,13 +32,13 @@ function apiResponse(wrapperPromise, res) {
 }
 
 router.get('/projects/:id', (req, res) => {
-  apiResponse(apiWrapper.getProjectCached(req.params.id), res);
+  apiResponse(apiWrapper.getProject(req.params.id), res);
 });
 router.get('/studios/:id', (req, res) => {
-  apiResponse(apiWrapper.getStudioCached(req.params.id), res);
+  apiResponse(apiWrapper.getStudio(req.params.id), res);
 });
 router.get('/users/:name', (req, res) => {
-  apiResponse(apiWrapper.getStudioCached(req.params.name), res);
+  apiResponse(apiWrapper.getStudio(req.params.name), res);
 });
 
 module.exports = router;

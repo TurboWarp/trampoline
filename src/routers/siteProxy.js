@@ -20,7 +20,7 @@ router.use((req, res, next) => {
 });
 
 router.get('/projects/in/:studio/:page', (req, res) => {
-  site.getProjectsInStudioCached(req.params.studio, req.params.page).then((data) => {
+  site.getProjectsInStudio(req.params.studio, req.params.page).then((data) => {
     const [cached, entry] = data;
     res.header('Expires', entry.getExpiresDate());
     res.end(entry.value);

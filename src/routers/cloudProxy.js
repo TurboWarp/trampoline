@@ -1,11 +1,11 @@
 const express = require('express');
-const ScratchCloudWrapper = require('../lib/caching/CachingScratchCloudWrapper');
+const CachingScratchCloudWrapper = require('../lib/caching/CachingScratchCloudWrapper');
 const CacheEntry = require('../lib/caching/CacheEntry');
 const APIError = require('../lib/APIError');
 const { CLOUD_WRAPPER: config } = require('../config');
 
 const router = express.Router();
-const api = new ScratchCloudWrapper();
+const api = new CachingScratchCloudWrapper();
 api.logCache.ttl = config.logCache;
 
 /**
@@ -33,7 +33,7 @@ router.get('/logs/:project', (req, res) => {
   const project = req.params.project;
   const limit = +req.query.limit || 40;
   const offset = +req.query.offset || 0;
-  apiResponse(api.getLogsCached(project, limit, offset), res);
+  apiResponse(api.getLogs(project, limit, offset), res);
 });
 
 module.exports = router;
