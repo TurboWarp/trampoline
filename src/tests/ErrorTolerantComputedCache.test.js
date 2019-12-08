@@ -6,7 +6,7 @@ test('computeIfMissing', async () => {
     if (key === 'apple') throw new Error('Cannot store the value apple');
     return Promise.resolve(key.toUpperCase());
   });
-  const cache = new ErrorTolerantComputedCache(1000, fn);
+  const cache = new ErrorTolerantComputedCache({ ttl: 10000 }, fn);
   expect(await cache.has('key')).toBe(false);
   let cached, value;
 

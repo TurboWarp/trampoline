@@ -46,7 +46,7 @@ test('eviction', async () => {
 });
 
 test('expiry', async () => {
-  const cache = new Cache(1000);
+  const cache = new Cache({ ttl: 1000 });
   cache.now = () => 0;
   await cache.put('a', 3);
   expect(await cache.has('a')).toBe(true);
