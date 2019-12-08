@@ -10,9 +10,9 @@ app.set('json escape', true);
 app.set('x-powered-by', false);
 logger.debugEnabled = app.get('env') === 'development';
 
-if (config.STATIC.enabled) {
+if (config.APP.enableStatic) {
   logger.debug('Enabling Static');
-  app.use(express.static('static'));
+  app.use(express.static(config.APP.staticRoot));
 }
 
 app.use((req, res, next) => {
@@ -40,8 +40,7 @@ if (config.CLOUD_WRAPPER.enabled) {
 
 app.use((req, res) => {
   logger.debug('404:', req.path);
-  res.type('text/plain');
-  res.status(404).send('404');
+  res.status(404).sendFile(config.APP.notFoundFile, { root: config.APP.staticRoot });
 });
 
 app.listen(config.APP.port, function() {

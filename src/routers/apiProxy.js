@@ -5,10 +5,11 @@ const APIError = require('../lib/APIError');
 const { API_WRAPPER: config } = require('../config');
 
 const router = express.Router();
-const apiWrapper = new CachingScratchWrapper();
-apiWrapper.projectCache.ttl = config.projectCache;
-apiWrapper.userCache.ttl = config.userCache;
-apiWrapper.studioCache.ttl = config.studioCache;
+const apiWrapper = new CachingScratchWrapper({
+  projectCacheOptions: config.projectCache,
+  userCacheOptions: config.userCache,
+  studioCacheOptions: config.studioCache,
+});
 
 /**
  * @param {Promise<[boolean, CacheEntry]>} wrapperPromise 

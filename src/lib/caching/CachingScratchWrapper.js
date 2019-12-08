@@ -2,11 +2,15 @@ const ScratchWrapper = require('../ScratchWrapper');
 const ErrorTolerantComputedCache = require('./ErrorTolerantComputedCache');
 
 class CachingScratchWrapper extends ScratchWrapper {
-  constructor() {
+  constructor({
+    projectCacheOptions,
+    userCacheOptions,
+    studioCacheOptions,
+  }) {
     super();
-    this.projectCache = new ErrorTolerantComputedCache({ ttl: 60000 }, (key) => super.getProject(key));
-    this.userCache = new ErrorTolerantComputedCache({ ttl: 60000}, (key) => super.getUser(key));
-    this.studioCache = new ErrorTolerantComputedCache({ ttl: 60000 }, (key) => super.getStudio(key));
+    this.projectCache = new ErrorTolerantComputedCache(projectCacheOptions, (key) => super.getProject(key));
+    this.userCache = new ErrorTolerantComputedCache(userCacheOptions, (key) => super.getUser(key));
+    this.studioCache = new ErrorTolerantComputedCache(studioCacheOptions, (key) => super.getStudio(key));
   }
 
   async getProject(key) {

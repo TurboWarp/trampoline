@@ -4,8 +4,9 @@ const APIError = require('../lib/APIError');
 const { SITE_API_WRAPPER: config } = require('../config');
 
 const router = express.Router();
-const site = new CachingScratchSiteWrapper();
-site.studioPageCache.ttl = config.studioPageCache;
+const site = new CachingScratchSiteWrapper({
+  studioPageCacheOptions: config.studioPageCache,
+});
 
 // The site-api generally returns HTML. To make sure browsers do not attempt to display this as HTML, we:
 //  - set Content-Type to something other than HTML
