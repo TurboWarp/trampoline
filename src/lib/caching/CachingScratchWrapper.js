@@ -4,9 +4,9 @@ const ErrorTolerantComputedCache = require('./ErrorTolerantComputedCache');
 class CachingScratchWrapper extends ScratchWrapper {
   constructor() {
     super();
-    this.projectCache = new ErrorTolerantComputedCache(60000, (key) => super.getProject(key));
-    this.userCache = new ErrorTolerantComputedCache(60000, (key) => super.getUser(key));
-    this.studioCache = new ErrorTolerantComputedCache(60000, (key) => super.getStudio(key));
+    this.projectCache = new ErrorTolerantComputedCache({ ttl: 60000 }, (key) => super.getProject(key));
+    this.userCache = new ErrorTolerantComputedCache({ ttl: 60000}, (key) => super.getUser(key));
+    this.studioCache = new ErrorTolerantComputedCache({ ttl: 60000 }, (key) => super.getStudio(key));
   }
 
   async getProject(key) {

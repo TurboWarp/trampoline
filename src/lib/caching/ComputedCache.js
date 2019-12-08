@@ -7,17 +7,17 @@ const logger = require('../../logger');
  */
 class ComputedCache extends Cache {
   /**
-   * @param {number} ttl
-   * @param {(key: string) => Promise<T>} computer
+   * @param {import('./Cache').CacheOptions} options
+   * @param {(key: import('./Cache').Key) => Promise<T>} computer
    */
-  constructor(ttl, computer) {
-    super(ttl);
+  constructor(options, computer) {
+    super(options);
     this.computer = computer;
   }
 
   /**
    * Get a value from the cache, or compute its value if it does not exist.
-   * @param {any} key
+   * @param {import('./Cache').Key} key
    * @returns {Promise<[boolean, CacheEntry<T>]>} A tuple of whether the value was returned from cache or newly computed, and the CacheEntry
    */
   async computeIfMissing(key) {

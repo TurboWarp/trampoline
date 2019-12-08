@@ -4,7 +4,7 @@ const ErrorTolerantComputedCache = require('./ErrorTolerantComputedCache');
 class CachingScratchSiteWrapper extends ScratchSiteWrapper {
   constructor() {
     super();
-    this.studioPageCache = new ErrorTolerantComputedCache(60000, (key) => super.getProjectsInStudio(key[0], key[1]));
+    this.studioPageCache = new ErrorTolerantComputedCache({ ttl: 60000 }, (key) => super.getProjectsInStudio(key[0], key[1]));
     this.studioPageCache.tupleKeys = true;
   }
 

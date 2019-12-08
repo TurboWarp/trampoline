@@ -1,5 +1,5 @@
 // This is the default configuration.
-// It should not be changed. Edit config.private.js instead.
+// To make private changes, edit config.private.js in the parent directory (automatically created after first launch)
 
 module.exports.STATIC = {
   enabled: true,

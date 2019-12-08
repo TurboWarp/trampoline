@@ -12,11 +12,11 @@ const ComputedCache = require('./ComputedCache');
  */
 class ErrorTolerantComputedCache extends ComputedCache {
   /**
-   * @param {number} ttl
+   * @param {import('./Cache').CacheOptions} options
    * @param {(key: string) => Promise<any>} computer
    */
-  constructor(ttl, computer) {
-    super(ttl, computer);
+  constructor(options, computer) {
+    super(options, computer);
     this.computer = this.makeErrorTolerant(this.computer);
   }
 

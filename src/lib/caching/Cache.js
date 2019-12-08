@@ -7,6 +7,12 @@ const CacheEntry = require('./CacheEntry');
  */
 
 /**
+ * @typedef CacheOptions
+ * @property {number} [ttl]
+ * @property {number} [maxEntries]
+ */
+
+/**
  * A cache that associates a key with a value for a set duration of time.
  * It has a maximum limit of unique key <-> value pairs, set by maxEntries.
  * Entries that have expired are evicted only when the entries list reaches the maximum length, or when a new entry of the same key in inserted.
@@ -15,13 +21,13 @@ const CacheEntry = require('./CacheEntry');
  */
 class Cache {
   /**
-   * @param {number} ttl The time, in milliseconds, for cache values to be valid for.
+   * @param {CacheOptions} [options] Options
    */
-  constructor(ttl) {
+  constructor(options = {}) {
     /** The time, in milliseconds, for cache values to be valid for. */
-    this.ttl = ttl || 1000 * 60;
+    this.ttl = 'ttl' in options ? options.ttl : Cache.DEFAULT_OPTIONS.ttl;
     /** Maximum number of values to cache before the least recently accessed values are evicted. */
-    this.maxEntries = 1000;
+    this.maxEntries = 'maxEntries' in options ? options.maxEntries : Cache.DEFAULT_OPTIONS.maxEntries;
     /** @type {CacheEntry[]} */
     this.entries = [];
     /** Enables "Tuple Keys" mode, where the keys are an array instead of a string. */
@@ -143,5 +149,10 @@ class Cache {
     return entry;
   }
 }
+
+Cache.DEFAULT_OPTIONS = {
+  ttl: 1000 * 60,
+  maxEntries: 1000,
+};
 
 module.exports = Cache;
