@@ -26,10 +26,15 @@ class Cache {
   constructor(options = {}) {
     /** The time, in milliseconds, for cache values to be valid for. */
     this.ttl = 'ttl' in options ? options.ttl : Cache.DEFAULT_OPTIONS.ttl;
+    if (this.ttl < 0) throw new Error('TTL cannot be negative');
+    
     /** Maximum number of values to cache before the least recently accessed values are evicted. */
     this.maxEntries = 'maxEntries' in options ? options.maxEntries : Cache.DEFAULT_OPTIONS.maxEntries;
+    if (this.maxEntries < 0) throw new Error('maxEntries cannot be negative');
+
     /** @type {CacheEntry[]} */
     this.entries = [];
+
     /** Enables "Tuple Keys" mode, where the keys are an array instead of a string. */
     this.tupleKeys = false;
   }

@@ -59,3 +59,8 @@ test('expiry', async () => {
   expect(await cache.has('a')).toBe(false);
   expect(await cache.get('a')).toBeNull();
 });
+
+test('errors', async () => {
+  expect(() => new Cache({ ttl: -1 })).toThrow('cannot be negative');
+  expect(() => new Cache({ maxEntries: -1 })).toThrow('cannot be negative');
+});
