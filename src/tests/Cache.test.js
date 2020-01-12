@@ -64,3 +64,16 @@ test('errors', async () => {
   expect(() => new Cache({ ttl: -1 })).toThrow('cannot be negative');
   expect(() => new Cache({ maxEntries: -1 })).toThrow('cannot be negative');
 });
+
+test('disabled caches', async () => {
+  expect(new Cache({ maxEntries: 0 }).isDisabled()).toBe(true);
+  expect(new Cache({ maxEntries: 1 }).isDisabled()).toBe(false);
+
+  const cache = new Cache({ maxEntries: 0 });
+  await cache.put('a', 1);
+  expect(await cache.has('a')).toBe(false);
+
+  const cache2 = new Cache({ ttl: 0 });
+  await cache2.put('a', 1);
+  expect(await cache2.has('a')).toBe(false);
+});

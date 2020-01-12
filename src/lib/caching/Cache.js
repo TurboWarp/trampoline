@@ -105,6 +105,14 @@ class Cache {
   }
 
   /**
+   * Determine whether this Cache is effectively disabled due to its configuration.
+   * @returns {boolean}
+   */
+  isDisabled() {
+    return this.ttl <= 0 || this.maxEntries <= 0;
+  }
+
+  /**
    * Determine if a key exists and is not expired in this cache.
    * @param {Key} key
    * @returns {Promise<boolean>}
@@ -145,6 +153,10 @@ class Cache {
   async put(key, value) {
     if (isNaN(this.ttl)) {
       throw new Error('Invalid Cache TTL: ' + this.ttl);
+    }
+    if (this.isDisabled()) {
+      // don't even bother trying
+      return;
     }
     // Remove old values, if any.
     this.removeEntriesWithKey(key);
