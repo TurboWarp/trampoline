@@ -62,7 +62,12 @@ test('expiry', async () => {
 
 test('errors', async () => {
   expect(() => new Cache({ ttl: -1 })).toThrow('cannot be negative');
+  expect(() => new Cache({ ttl: 'eee' })).toThrow('is not a number');
+  expect(() => new Cache({ ttl: NaN })).toThrow('is not a number');
   expect(() => new Cache({ maxEntries: -1 })).toThrow('cannot be negative');
+  expect(() => new Cache({ maxEntries: 'string' })).toThrow('is not a number');
+  expect(() => new Cache({ maxEntries: NaN })).toThrow('is not a number');
+  expect(() => new Cache({ maxEntries: 1.6 })).toThrow('decimal');
 });
 
 test('disabled caches', async () => {

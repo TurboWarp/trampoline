@@ -1,5 +1,9 @@
 const CacheEntry = require('./CacheEntry');
 
+function isNumber(x) {
+  return typeof x === 'number' && !Number.isNaN(x);
+}
+
 /**
  * @typedef {string|any[]} Key
  * A string in tupleKeys = false,
@@ -31,10 +35,13 @@ class Cache {
     /** The time, in milliseconds, for cache values to be valid for. */
     this.ttl = 'ttl' in options ? options.ttl : Cache.DEFAULT_OPTIONS.ttl;
     if (this.ttl < 0) throw new Error('TTL cannot be negative');
-    
+    if (!isNumber(this.ttl)) throw new Error('TTL is not a number');
+
     /** Maximum number of values to cache before the least recently accessed values are evicted. */
     this.maxEntries = 'maxEntries' in options ? options.maxEntries : Cache.DEFAULT_OPTIONS.maxEntries;
     if (this.maxEntries < 0) throw new Error('maxEntries cannot be negative');
+    if (!isNumber(this.maxEntries)) throw new Error('maxEntries is not a number');
+    if (Math.round(this.maxEntries) !== this.maxEntries) throw new Error('maxEntries cannot be a decimal');
 
     /** @type {CacheEntry[]} */
     this.entries = [];
@@ -155,9 +162,6 @@ class Cache {
    * @param {T} value
    */
   async put(key, value) {
-    if (isNaN(this.ttl)) {
-      throw new Error('Invalid Cache TTL: ' + this.ttl);
-    }
     if (this.isDisabled()) {
       // don't even bother trying
       return;
