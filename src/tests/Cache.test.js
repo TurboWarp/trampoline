@@ -77,3 +77,8 @@ test('disabled caches', async () => {
   await cache2.put('a', 1);
   expect(await cache2.has('a')).toBe(false);
 });
+
+test('named caches', async () => {
+  expect(new Cache().name).toBe('Unnamed Cache');
+  expect(new Cache({ name: 'eee' }).name).toBe('eee');
+});

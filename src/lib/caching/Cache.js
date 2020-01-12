@@ -10,6 +10,7 @@ const CacheEntry = require('./CacheEntry');
  * @typedef CacheOptions
  * @property {number} [ttl]
  * @property {number} [maxEntries]
+ * @property {string} [name]
  */
 
 /**
@@ -24,6 +25,9 @@ class Cache {
    * @param {CacheOptions} [options] Options
    */
   constructor(options = {}) {
+    /** Name of this cache */
+    this.name = 'name' in options ? options.name : 'Unnamed Cache';
+
     /** The time, in milliseconds, for cache values to be valid for. */
     this.ttl = 'ttl' in options ? options.ttl : Cache.DEFAULT_OPTIONS.ttl;
     if (this.ttl < 0) throw new Error('TTL cannot be negative');
