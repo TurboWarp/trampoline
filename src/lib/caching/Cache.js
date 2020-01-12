@@ -26,7 +26,7 @@ class Cache {
    */
   constructor(options = {}) {
     /** Name of this cache */
-    this.name = 'name' in options ? options.name : 'Unnamed Cache';
+    this.name = 'name' in options ? options.name : Cache.DEFAULT_OPTIONS.name;
 
     /** The time, in milliseconds, for cache values to be valid for. */
     this.ttl = 'ttl' in options ? options.ttl : Cache.DEFAULT_OPTIONS.ttl;
@@ -172,6 +172,7 @@ class Cache {
 }
 
 Cache.DEFAULT_OPTIONS = {
+  name: 'Unnamed Cache',
   ttl: 1000 * 60,
   maxEntries: 1000,
 };
