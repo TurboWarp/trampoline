@@ -4,7 +4,7 @@
 // These are some helpful constants you may want in your private config.
 const SECOND = 1000;
 const MINUTE = SECOND * 60;
-const HOUR = MINUTE * MINUTE * 60;
+const HOUR = MINUTE * 60;
 
 module.exports.API_WRAPPER = {
   enabled: true,
