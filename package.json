@@ -1,5 +1,5 @@
 {
-  "name": "forkphorus-backend",
+  "name": "forkphorus-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
-    "request": "^2.88.0"
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "jest": "^24.9.0"
