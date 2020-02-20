@@ -5,9 +5,7 @@ const APIError = require('../lib/APIError');
 const { CLOUD_WRAPPER: config } = require('../config');
 
 const router = express.Router();
-const api = new CachingScratchCloudWrapper({
-  logCacheOptions: config.logCache,
-});
+const api = new CachingScratchCloudWrapper(config);
 
 /**
  * @param {Promise<[boolean, CacheEntry]>} wrapperPromise 

@@ -8,6 +8,7 @@ const HOUR = MINUTE * 60;
 
 module.exports.API_WRAPPER = {
   enabled: true,
+  requestQueue: { throttle: 50, maxBacklog: 100 },
   projectCache: { name: 'project-meta', ttl: HOUR * 6, maxEntries: 1000 },
   userCache: { name: 'user-meta', ttl: HOUR, maxEntries: 50 },
   studioCache: { name: 'studio-meta', ttl: HOUR, maxEntries: 100 },
@@ -15,11 +16,13 @@ module.exports.API_WRAPPER = {
 
 module.exports.SITE_API_WRAPPER = {
   enabled: true,
+  requestQueue: { throttle: 250, maxBacklog: 20 },
   studioPageCache: { name: 'studio-pages', ttl: HOUR, maxEntries: 100 },
 };
 
 module.exports.CLOUD_WRAPPER = {
   enabled: true,
+  requestQueue: { throttle: 100, maxBacklog: 100 },
   logCache: { name: 'cloud-history', ttl: MINUTE * 30, maxEntries: 100 },
 };
 

@@ -5,10 +5,10 @@ const APIError = require('./APIError');
 
 /**
  * @typedef RequestQueueOptions
- * @property {number} [throttle] Minimum time, in milliseconds, between each request.
- * @property {number} [maxBacklog] The maximum number of queued requests.
- * @property {number} [timeout] Request timeout, in milliseconds.
- * @property {boolean} [supportCompression] Control gzip compression.
+ * @property {number} [throttle]
+ * @property {number} [maxBacklog]
+ * @property {number} [timeout]
+ * @property {boolean} [supportCompression]
  */
 
 /**
