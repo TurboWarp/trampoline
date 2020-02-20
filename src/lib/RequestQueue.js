@@ -26,12 +26,14 @@ class RequestQueue {
     this.backlog = [];
     /** The time that the most recent request was initiated */
     this.lastRequest = 0;
-    /** Whether the Queue is currently processing requests, or waiting for a request to be queued. */
+    /** Whether this queue is currently processing requests rather than waiting for a request to be queued. */
     this.processing = false;
     /** The time in milliseconds between requests. */
     this.throttle = throttle;
     /** Maximum number of requests that can be queued. */
     this.maxBacklog = 100;
+    /** Request timeout. */
+    this.timeout = 30 * 1000;
   }
 
   now() {
@@ -67,6 +69,7 @@ class RequestQueue {
     request.get(url, this.getRequestOptions(options), (err, res, body) => {
       if (err) {
         callback(new APIError.InternalError(err.code + ': ' + err.message), null);
+        this.scheduleNextRequest();
         return;
       }
 
@@ -77,11 +80,7 @@ class RequestQueue {
       }
 
       logger.debug('RequestQueue: processed request: ms', this.timeSinceLastRequest(), 'status', res.statusCode, 'next', this.timeUntilNextRequest());
-      if (this.backlogEmpty()) {
-        this.stopProcessingRequests();
-      } else {
-        this.scheduleNextRequest(this.timeUntilNextRequest());
-      }
+      this.scheduleNextRequest();
     });
   }
 
@@ -90,17 +89,22 @@ class RequestQueue {
     return {
       ...options,
       headers,
+      timeout: this.timeout,
       agent: RequestQueue.requestAgent,
     };
   }
 
-  scheduleNextRequest(delay) {
-    setTimeout(() => this.processNextRequest(), delay);
+  scheduleNextRequest() {
+    if (this.backlogEmpty()) {
+      this.stopProcessingRequests();
+    } else {
+      setTimeout(() => this.processNextRequest(), this.timeUntilNextRequest());
+    }
   }
 
   beginProcessingRequests() {
     this.processing = true;
-    this.scheduleNextRequest(this.timeUntilNextRequest());
+    this.scheduleNextRequest();
   }
 
   stopProcessingRequests() {
