@@ -7,8 +7,8 @@ const ScratchUtils = require('./ScratchUtils');
  */
 class ScratchWrapper {
   constructor({
-    requestQueue,
-  }) {
+    requestQueue = {},
+  } = {}) {
     this.requestQueue = new RequestQueue(requestQueue);
     this.PROJECT_API = 'https://api.scratch.mit.edu/projects/$id';
     this.STUDIO_API = 'https://api.scratch.mit.edu/studios/$id';
