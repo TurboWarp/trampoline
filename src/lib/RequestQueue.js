@@ -34,6 +34,8 @@ class RequestQueue {
     this.maxBacklog = 100;
     /** Request timeout. */
     this.timeout = 30 * 1000;
+    /** Enable gzip compression on requests. */
+    this.supportCompression = true;
   }
 
   now() {
@@ -90,6 +92,7 @@ class RequestQueue {
       ...options,
       headers,
       timeout: this.timeout,
+      gzip: this.supportCompression,
       agent: RequestQueue.requestAgent,
     };
   }
