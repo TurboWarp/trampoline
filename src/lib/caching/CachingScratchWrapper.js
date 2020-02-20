@@ -3,11 +3,12 @@ const ErrorTolerantComputedCache = require('./ErrorTolerantComputedCache');
 
 class CachingScratchWrapper extends ScratchWrapper {
   constructor({
+    requestQueue,
     projectCacheOptions,
     userCacheOptions,
     studioCacheOptions,
   }) {
-    super();
+    super({ requestQueue });
     this.projectCache = new ErrorTolerantComputedCache(projectCacheOptions, (key) => super.getProject(key));
     this.userCache = new ErrorTolerantComputedCache(userCacheOptions, (key) => super.getUser(key));
     this.studioCache = new ErrorTolerantComputedCache(studioCacheOptions, (key) => super.getStudio(key));

@@ -3,9 +3,10 @@ const ErrorTolerantComputedCache = require('./ErrorTolerantComputedCache');
 
 class CachingScratchSiteWrapper extends ScratchSiteWrapper {
   constructor({
+    requestQueue,
     studioPageCacheOptions,
   }) {
-    super();
+    super({ requestQueue });
     this.studioPageCache = new ErrorTolerantComputedCache(studioPageCacheOptions, (key) => super.getProjectsInStudio(key[0], key[1]));
     this.studioPageCache.tupleKeys = true;
   }

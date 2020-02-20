@@ -6,8 +6,10 @@ const ScratchUtils = require('./ScratchUtils');
  * API Wrapper for the public Scratch API: https://api.scratch.mit.edu/
  */
 class ScratchWrapper {
-  constructor() {
-    this.requestQueue = new RequestQueue(50);
+  constructor({
+    requestQueue,
+  }) {
+    this.requestQueue = new RequestQueue(requestQueue);
     this.PROJECT_API = 'https://api.scratch.mit.edu/projects/$id';
     this.STUDIO_API = 'https://api.scratch.mit.edu/studios/$id';
     this.USER_API = 'https://api.scratch.mit.edu/users/$name';

@@ -3,9 +3,10 @@ const ErrorTolerantComputedCache = require('./ErrorTolerantComputedCache');
 
 class CachingScratchWrapper extends ScratchCloudWrapper {
   constructor({
+    requestQueue,
     logCacheOptions,
   }) {
-    super();
+    super({ requestQueue });
     this.logCache = new ErrorTolerantComputedCache(logCacheOptions, (key) => super.getLogs(key[0], key[1], key[2]));
     this.logCache.tupleKeys = true;
   }

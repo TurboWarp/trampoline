@@ -4,6 +4,14 @@ const logger = require('../logger');
 const APIError = require('./APIError');
 
 /**
+ * @typedef RequestQueueOptions
+ * @property {number} [throttle] Minimum time, in milliseconds, between each request.
+ * @property {number} [maxBacklog] The maximum number of queued requests.
+ * @property {number} [timeout] Request timeout, in milliseconds.
+ * @property {boolean} [supportCompression] Control gzip compression.
+ */
+
+/**
  * @typedef {(err: any, body: any) => void} RequestCallback
  */
 
@@ -19,9 +27,9 @@ const APIError = require('./APIError');
  */
 class RequestQueue {
   /**
-   * @param {number} throttle The time, in milliseconds, between requests.
+   * @param {RequestQueueOptions} [options] Options
    */
-  constructor(throttle) {
+  constructor(options = {}) {
     /** @type {QueuedRequest[]} */
     this.backlog = [];
     /** The time that the most recent request was initiated */
@@ -29,13 +37,13 @@ class RequestQueue {
     /** Whether this queue is currently processing requests rather than waiting for a request to be queued. */
     this.processing = false;
     /** The time in milliseconds between requests. */
-    this.throttle = throttle;
+    this.throttle = 'throttle' in options ? options.throttle : 100;
     /** Maximum number of requests that can be queued. */
-    this.maxBacklog = 100;
+    this.maxBacklog = 'maxBacklog' in options ? options.maxBacklog : 100;
     /** Request timeout. */
-    this.timeout = 30 * 1000;
+    this.timeout = 'timeout' in options ? options.timeout : 30000;
     /** Enable gzip compression on requests. */
-    this.supportCompression = true;
+    this.supportCompression = 'supportCompression' in options ? options.supportCompression : true;
   }
 
   now() {

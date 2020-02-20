@@ -3,8 +3,10 @@ const APIError = require('./APIError');
 const RequestQueue = require('./RequestQueue');
 
 class ScratchCloudWrapper {
-  constructor() {
-    this.requestQueue = new RequestQueue(50);
+  constructor({
+    requestQueue,
+  }) {
+    this.requestQueue = new RequestQueue(requestQueue);
     this.LOG_API = 'https://clouddata.scratch.mit.edu/logs?projectid=$project&limit=$limit&offset=$offset'
     this.LOG_LIMIT = 100;
   }
