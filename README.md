@@ -2,4 +2,4 @@
 
 Web service that proxies the Scratch API for use in web services such as [forkphorus](https://forkphorus.github.io).
 
-The service uses heavy caching (browser level, server level, and possibly CDN level) to reduce the amount of requests to the Scratch API.
+It uses heavy caching (browser and server level) and request throttling to reduce the amount of requests sent to the Scratch API.
