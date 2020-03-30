@@ -10,14 +10,14 @@ module.exports.API_WRAPPER = {
   enabled: true,
   requestQueue: { throttle: 50, maxBacklog: 100 },
   projectCache: { name: 'project-meta', ttl: HOUR * 6, maxEntries: 1000 },
-  userCache: { name: 'user-meta', ttl: HOUR, maxEntries: 50 },
-  studioCache: { name: 'studio-meta', ttl: HOUR, maxEntries: 100 },
+  userCache: { name: 'user-meta', ttl: HOUR * 6, maxEntries: 50 },
+  studioCache: { name: 'studio-meta', ttl: HOUR * 6, maxEntries: 100 },
 };
 
 module.exports.SITE_API_WRAPPER = {
   enabled: true,
   requestQueue: { throttle: 250, maxBacklog: 20 },
-  studioPageCache: { name: 'studio-pages', ttl: HOUR, maxEntries: 100 },
+  studioPageCache: { name: 'studio-pages', ttl: HOUR * 6, maxEntries: 100 },
 };
 
 module.exports.CLOUD_WRAPPER = {
