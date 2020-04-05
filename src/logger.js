@@ -24,7 +24,7 @@ class Logger {
 
   warn(...args) {
     if (this.warnEnabled) {
-      console.error('\u001b[93warning!\u001b[37m', ...args);
+      console.error('\u001b[93mwarning!\u001b[37m', ...args);
     }
   }
 
