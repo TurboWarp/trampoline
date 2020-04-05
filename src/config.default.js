@@ -26,6 +26,20 @@ module.exports.CLOUD_WRAPPER = {
   logCache: { name: 'cloud-history', ttl: MINUTE * 30, maxEntries: 100 },
 };
 
+module.exports.STATS = {
+  enabled: false,
+  interval: HOUR,
+  requestTracking: {
+    enabled: true,
+  },
+  cacheTracking: {
+    enabled: true,
+  },
+  refererTracking: {
+    enabled: true,
+  },
+};
+
 module.exports.APP = {
   allowOrigins: '*',
   enableStatic: true,

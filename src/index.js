@@ -4,6 +4,13 @@ const logger = require('./logger');
 const app = express();
 const config = require('./config');
 
+if (config.STATS.enabled) {
+  logger.info('Enabling stat tracking');
+  const statModule = require('./stats');
+  app.use(statModule.middleware);
+  statModule.startInterval();
+}
+
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
 app.set('json escape', true);

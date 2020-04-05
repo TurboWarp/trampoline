@@ -48,6 +48,10 @@ class Cache {
 
     /** Enables "Tuple Keys" mode, where the keys are an array instead of a string. */
     this.tupleKeys = false;
+
+    if (Cache.tracker) {
+      Cache.tracker.add(this);
+    }
   }
 
   now() {
@@ -174,6 +178,9 @@ class Cache {
     return entry;
   }
 }
+
+/** @type {import('../../stats/InstanceTracker.js')<Cache>} */
+Cache.tracker = null;
 
 Cache.DEFAULT_OPTIONS = {
   name: 'Unnamed Cache',
