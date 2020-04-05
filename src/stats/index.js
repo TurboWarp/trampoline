@@ -15,6 +15,7 @@ if (config.refererTracking.enabled) addTracker(require('./refererTracking'));
 function printStatistics() {
   try {
     logger.header('Start stats update');
+    logger.info('time: ' + new Date());
     for (const t of trackers) {
       if (t.run) {
         t.run();
