@@ -13,8 +13,9 @@ function printRefererStats() {
 
   logger.info(`total referers: ${referers.size}`)
 
+  // Sort the referers map in reverse, larger numbers first.
   const entries = Array.from(referers.entries());
-  entries.sort((a, b) => a[1] - b[1]);
+  entries.sort((a, b) => b[1] - a[1]);
 
   const detailedLogsCount = Math.min(entries.length, 10);
   for (var rank = 0; rank < detailedLogsCount; rank++) {
