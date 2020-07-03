@@ -17,7 +17,7 @@ if (config.LOGGING.rotation) {
 }
 
 const enableDebugLogging = () => {
-  if (isDevelopment) {
+  if (isDevelopment || config.LOGGING.forceEnableConsoleLogging) {
     logger.add(new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
