@@ -1,5 +1,7 @@
 const winston = require('winston');
+require('winston-daily-rotate-file');
 
+const config = require('./config');
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const logger = winston.createLogger({
@@ -8,10 +10,11 @@ const logger = winston.createLogger({
     winston.format.splat(),
     winston.format.simple()
   ),
-  transports: [
-    new winston.transports.File({ filename: 'logs/log.log' }),
-  ],
 });
+
+if (config.LOGGING.rotation) {
+  logger.add(new winston.transports.DailyRotateFile(config.LOGGING.rotation));
+}
 
 if (isDevelopment) {
   logger.add(new winston.transports.Console({

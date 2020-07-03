@@ -11,7 +11,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "request": "^2.88.2",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.0"
   },
   "devDependencies": {
     "jest": "^26.1.0"

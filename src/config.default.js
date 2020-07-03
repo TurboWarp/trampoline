@@ -40,6 +40,18 @@ module.exports.STATS = {
   },
 };
 
+module.exports.LOGGING = {
+  // these options are passed directly into winston-daily-rotate-file
+  // see https://github.com/winstonjs/winston-daily-rotate-file#options
+  // set to null to disable the rotating file logger
+  rotation: {
+    filename: 'logs/%DATE%.log',
+    datePattern: 'YYYY-MM-DD',
+    maxFiles: '7d',
+    auditFile: 'logs/.log-audit.json'
+  },
+};
+
 module.exports.APP = {
   allowOrigins: '*',
   enableStatic: true,
