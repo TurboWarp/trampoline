@@ -16,14 +16,17 @@ if (config.LOGGING.rotation) {
   logger.add(new winston.transports.DailyRotateFile(config.LOGGING.rotation));
 }
 
-if (isDevelopment) {
-  logger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple(),
-    ),
-  }));
-  logger.debug('Development mode');
-}
+const enableDebugLogging = () => {
+  if (isDevelopment) {
+    logger.add(new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple(),
+      ),
+    }));
+    logger.debug('Development mode');
+  }
+};
 
 module.exports = logger;
+module.exports.enableDebugLogging = enableDebugLogging;
