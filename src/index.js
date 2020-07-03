@@ -1,9 +1,6 @@
 const express = require('express');
 const logger = require('./logger');
 
-// @ts-ignore
-logger.enableDebugLogging();
-
 const app = express();
 const config = require('./config');
 

@@ -51,7 +51,7 @@ module.exports.LOGGING = {
     filename: 'logs/%DATE%.log',
     datePattern: 'YYYY-MM-DD',
     maxFiles: '7d',
-    auditFile: 'logs/.log-audit.json'
+    auditFile: 'logs/.log-audit.json',
   },
 };
 
