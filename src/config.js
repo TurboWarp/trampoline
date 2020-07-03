@@ -4,7 +4,8 @@
 const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
-const logger = require('./logger');
+
+// cannot use logger here as that would be a circular dependency: logger depends on config
 
 const defaultConfig = require('./config.default');
 const privateConfigPath = path.join(__dirname, '..', 'config.private.js');
@@ -13,20 +14,20 @@ const privateConfigPath = path.join(__dirname, '..', 'config.private.js');
 try {
   fs.lstatSync(privateConfigPath);
 } catch (e) {
-  logger.debug('creating private config file');
   try {
     fs.writeFileSync(privateConfigPath, '');
   } catch (e) {
-    logger.error('cannot create private config', e);
+    console.error('cannot create private config', e);
   }
 }
 
 // Attempt to load the private config
 try {
+  // @ts-ignore
   const privateConfig = require('../config.private');
   utils.deepMerge(defaultConfig, privateConfig);
 } catch (e) {
-  logger.error('cannot read private config', e);
+  console.error('cannot read private config', e);
 }
 
 module.exports = defaultConfig;
