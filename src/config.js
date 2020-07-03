@@ -23,8 +23,8 @@ try {
 
 // Attempt to load the private config
 try {
-  const private = require('../config.private');
-  utils.deepMerge(defaultConfig, private);
+  const privateConfig = require('../config.private');
+  utils.deepMerge(defaultConfig, privateConfig);
 } catch (e) {
   logger.error('cannot read private config', e);
 }
