@@ -12,9 +12,7 @@ const logger = winston.createLogger({
   ),
 });
 
-if (config.LOGGING.rotation) {
-  logger.add(new winston.transports.DailyRotateFile(config.LOGGING.rotation));
-}
+logger.add(new winston.transports.DailyRotateFile(config.LOGGING.rotation));
 
 if ((environment.isDevelopment || config.LOGGING.forceEnableConsoleLogging) && !environment.isTest) {
   logger.add(new winston.transports.Console({
