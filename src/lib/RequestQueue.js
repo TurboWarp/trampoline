@@ -89,7 +89,7 @@ class RequestQueue {
         default: callback(new APIError.UpstreamError('HTTP Status Code: ' + res.statusCode), null); break;
       }
 
-      logger.debug('RequestQueue: processed request: ms', this.timeSinceLastRequest(), 'status', res.statusCode, 'next', this.timeUntilNextRequest());
+      logger.debug('RequestQueue: processed request: ms %d status %d next %d', this.timeSinceLastRequest(), res.statusCode, this.timeUntilNextRequest());
       this.scheduleNextRequest();
     });
   }
@@ -129,7 +129,7 @@ class RequestQueue {
    * @param {RequestCallback} callback 
    */
   queue(url, options, callback) {
-    logger.debug('RequestQueue: queue url:', url, 'backlog size:', this.backlog.length);
+    logger.debug('RequestQueue: queue url %s backlog size %d', url, this.backlog.length);
     if (this.backlogFilled()) {
       callback(new APIError.TooManyRequests('Request backlog is filled.'), null);
       return;

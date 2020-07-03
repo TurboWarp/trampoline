@@ -23,10 +23,10 @@ class ComputedCache extends Cache {
   async computeIfMissing(key) {
     const cachedValue = await this.get(key);
     if (cachedValue) {
-      logger.debug('ComputedCache: from cache: key:', key);
+      logger.debug('ComputedCache: from cache: key: %s', key);
       return [true, cachedValue];
     }
-    logger.debug('ComputedCache: computing: key:', key);
+    logger.debug('ComputedCache: computing: key: %s', key);
     const newValue = await this.computer(key);
     return [false, await this.put(key, newValue)];
   }

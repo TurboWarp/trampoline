@@ -1,38 +1,26 @@
-class Logger {
-  constructor() {
-    this.debugEnabled = false;
-    this.infoEnabled = true;
-    this.warnEnabled = true;
-    this.errorEnabled = true;
-  }
+const winston = require('winston');
 
-  /**
-   * Log a debug message.
-   * @param {any[]} args
-   */
-  debug(...args) {
-    if (this.debugEnabled) {
-      console.log('\u001b[90mdebug\u001b[37m', ...args);
-    }
-  }
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
-  info(...args) {
-    if (this.infoEnabled) {
-      console.log('\u001b[92minfo\u001b[37m', ...args);
-    }
-  }
+const logger = winston.createLogger({
+  level: isDevelopment ? 'debug' : 'info',
+  format: winston.format.combine(
+    winston.format.splat(),
+    winston.format.simple()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'logs/log.log' }),
+  ],
+});
 
-  warn(...args) {
-    if (this.warnEnabled) {
-      console.error('\u001b[93mwarning!\u001b[37m', ...args);
-    }
-  }
-
-  error(...args) {
-    if (this.errorEnabled) {
-      console.error('\u001b[91merror!\u001b[37m', ...args);
-    }
-  }
+if (isDevelopment) {
+  logger.add(new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.simple(),
+    ),
+  }));
+  logger.debug('Development mode');
 }
 
-module.exports = new Logger();
+module.exports = logger;

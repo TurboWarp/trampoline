@@ -15,7 +15,6 @@ app.set('case sensitive routing', true);
 app.set('strict routing', true);
 app.set('json escape', true);
 app.set('x-powered-by', false);
-logger.debugEnabled = app.get('env') === 'development';
 
 if (config.APP.enableStatic) {
   logger.debug('Enabling Static');
@@ -26,7 +25,7 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', config.APP.allowOrigins);
   res.header('Content-Security-Policy', 'default-src \'self\'')
   res.header('X-Frame-Options', 'deny');
-  logger.debug('Handling Request ::', req.path);
+  logger.debug('Handling Request :: %s', req.path);
   next();
 });
 
@@ -46,10 +45,10 @@ if (config.CLOUD_WRAPPER.enabled) {
 }
 
 app.use((req, res) => {
-  logger.debug('404:', req.path);
+  logger.debug('404: %s', req.path);
   res.status(404).sendFile(config.APP.notFoundFile, { root: config.APP.staticRoot });
 });
 
 app.listen(config.APP.port, function() {
-  logger.info('Started on port', config.APP.port);
+  logger.info('Started on port: %d', config.APP.port);
 });

@@ -1,13 +1,15 @@
-function header(...args) {
-  console.log('\u001b[34mStats\u001b[37m\u001b[01m ***', ...args, '***\u001b[00m');
+const logger = require('../logger');
+
+function header(message) {
+  logger.info('Stats *** %s ***', message);
 }
 
-function info(...args) {
-  console.log('\u001b[34mStats\u001b[37m', ...args);
+function info(message) {
+  logger.info('Stats %s', message);
 }
 
-function warn(...args) {
-  console.log('\u001b[34mStats\u001b[93m warning!\u001b[37m', ...args);
+function warn(message) {
+  logger.warn('Stats warning! %s', message);
 }
 
 module.exports = {

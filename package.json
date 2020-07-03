@@ -10,7 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "jest": "^26.1.0"
