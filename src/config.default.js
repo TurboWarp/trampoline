@@ -47,7 +47,8 @@ module.exports.LOGGING = {
   // these options are passed directly into winston-daily-rotate-file
   // see https://github.com/winstonjs/winston-daily-rotate-file#options
   rotation: {
-    filename: 'logs/%DATE%.log',
+    filename: '%DATE%.log',
+    dirname: 'logs',
     datePattern: 'YYYY-MM-DD',
     maxFiles: '7d',
     auditFile: 'logs/.log-audit.json',
