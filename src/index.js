@@ -52,11 +52,11 @@ app.use((req, res) => {
 
 const port = config.APP.port;
 app.listen(port, function() {
-  // Set permissions to 777 on sockets
+  // Update permissions of unix sockets
   if (typeof port === 'string' && port.startsWith('/') && config.APP.unixSocketPermissions >= 0) {
     fs.chmod(port, config.APP.unixSocketPermissions, function(err) {
       if (err) {
-        logger.error('could not chmod unix socket', err);
+        logger.error('could not chmod unix socket: ' + err);
         process.exit(1);
       }
     });
