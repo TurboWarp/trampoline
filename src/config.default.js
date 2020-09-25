@@ -61,4 +61,5 @@ module.exports.APP = {
   staticRoot: 'static',
   notFoundFile: '404.html',
   port: process.env.PORT || 8080,
+  unixSocketPermissions: -1,
 };

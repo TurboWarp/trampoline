@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const logger = require('./logger');
 
 const app = express();
@@ -49,6 +50,16 @@ app.use((req, res) => {
   res.status(404).sendFile(config.APP.notFoundFile, { root: config.APP.staticRoot });
 });
 
-app.listen(config.APP.port, function() {
-  logger.info('Started on port: %d', config.APP.port);
+const port = config.APP.port;
+app.listen(port, function() {
+  // Set permissions to 777 on sockets
+  if (typeof port === 'string' && port.startsWith('/') && config.APP.unixSocketPermissions >= 0) {
+    fs.chmod(port, config.APP.unixSocketPermissions, function(err) {
+      if (err) {
+        logger.error('could not chmod unix socket', err);
+        process.exit(1);
+      }
+    });
+  }
+  logger.info('Started on port: %d', port);
 });
