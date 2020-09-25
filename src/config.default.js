@@ -48,9 +48,11 @@ module.exports.LOGGING = {
   // see https://github.com/winstonjs/winston-daily-rotate-file#options
   rotation: {
     filename: '%DATE%.log',
-    dirname: 'logs',
+    // LOGS_DIRECTORY is used by systemd
+    dirname: process.env.LOGS_DIRECTORY || 'logs',
     datePattern: 'YYYY-MM-DD',
     maxFiles: '7d',
+    createSymlink: true,
   },
 };
 
