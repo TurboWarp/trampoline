@@ -61,5 +61,5 @@ app.listen(port, function() {
       }
     });
   }
-  logger.info('Started on port: %d', port);
+  logger.info('Started on port: %s', port);
 });
