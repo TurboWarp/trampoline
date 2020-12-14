@@ -9,7 +9,7 @@ const HOUR = MINUTE * 60;
 module.exports.API_WRAPPER = {
   enabled: true,
   requestQueue: { throttle: 50, maxBacklog: 100 },
-  projectCache: { name: 'project-meta', ttl: HOUR * 6, maxEntries: 1000 },
+  projectCache: { name: 'project-meta', ttl: HOUR * 6, maxEntries: 2000 },
   userCache: { name: 'user-meta', ttl: HOUR * 6, maxEntries: 50 },
   studioCache: { name: 'studio-meta', ttl: HOUR * 6, maxEntries: 100 },
 };
