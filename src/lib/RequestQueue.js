@@ -67,7 +67,9 @@ class RequestQueue {
   }
 
   getHeaders() {
-    return {};
+    return {
+      'User-Agent': 'https://github.com/forkphorus/trampoline'
+    };
   }
 
   processNextRequest() {
