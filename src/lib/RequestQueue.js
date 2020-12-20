@@ -9,7 +9,6 @@ const APIError = require('./APIError');
  * @property {number} [throttle]
  * @property {number} [maxBacklog]
  * @property {number} [timeout]
- * @property {boolean} [supportCompression]
  */
 
 /**
@@ -43,8 +42,6 @@ class RequestQueue {
     this.maxBacklog = 'maxBacklog' in options ? options.maxBacklog : 100;
     /** Request timeout. */
     this.timeout = 'timeout' in options ? options.timeout : 30000;
-    /** Enable gzip compression on requests. */
-    this.supportCompression = 'supportCompression' in options ? options.supportCompression : true;
   }
 
   now() {
@@ -110,7 +107,6 @@ class RequestQueue {
       headers: {
         'User-Agent': 'https://github.com/forkphorus/trampoline'
       },
-      gzip: this.supportCompression,
       agent: RequestQueue.requestAgent,
     };
   }
