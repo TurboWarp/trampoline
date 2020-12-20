@@ -89,7 +89,7 @@ class RequestQueue {
           }
           case 404: callback(new APIError.NotFound('Resource does not exist'), null); break;
           default: callback(new APIError.UpstreamError('HTTP Status Code: ' + res.status), null); break;
-        }        
+        }
 
         logger.debug('RequestQueue: processed request: ms %d status %d next %d', this.timeSinceLastRequest(), res.status, this.timeUntilNextRequest());
       })
@@ -130,9 +130,9 @@ class RequestQueue {
 
   /**
    * Queue a request.
-   * @param {string} url 
-   * @param {any} options 
-   * @param {RequestCallback} callback 
+   * @param {string} url
+   * @param {any} options
+   * @param {RequestCallback} callback
    */
   queue(url, options, callback) {
     logger.debug('RequestQueue: queue url %s backlog size %d', url, this.backlog.length);
@@ -148,8 +148,8 @@ class RequestQueue {
 
   /**
    * Promise-based wrapper for queue()
-   * @param {string} url 
-   * @param {any} options 
+   * @param {string} url
+   * @param {any} options
    */
   queuePromise(url, options) {
     return new Promise((resolve, reject) => {
