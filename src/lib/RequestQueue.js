@@ -1,5 +1,5 @@
 const https = require('https');
-const request = require('request');
+const fetch = require('node-fetch').default;
 const logger = require('../logger');
 const APIError = require('./APIError');
 
@@ -78,22 +78,25 @@ class RequestQueue {
     }
     const { url, callback, options } = this.backlog.shift();
     this.lastRequest = this.now();
-    request.get(url, this.getRequestOptions(options), (err, res, body) => {
-      if (err) {
+    fetch(url, this.getRequestOptions(options))
+      .then(async (res) => {
+        switch (res.status) {
+          case 200: {
+            const body = await (options.json ? res.json() : res.text());
+            callback(null, body);
+            break;
+          }
+          case 404: callback(new APIError.NotFound('Resource does not exist'), null); break;
+          default: callback(new APIError.UpstreamError('HTTP Status Code: ' + res.status), null); break;
+        }        
+
+        logger.debug('RequestQueue: processed request: ms %d status %d next %d', this.timeSinceLastRequest(), res.status, this.timeUntilNextRequest());
+        this.scheduleNextRequest();
+      })
+      .catch((err) => {
         callback(new APIError.InternalError(err.code + ': ' + err.message), null);
         this.scheduleNextRequest();
-        return;
-      }
-
-      switch (res.statusCode) {
-        case 200: callback(null, body); break;
-        case 404: callback(new APIError.NotFound('Resource does not exist'), null); break;
-        default: callback(new APIError.UpstreamError('HTTP Status Code: ' + res.statusCode), null); break;
-      }
-
-      logger.debug('RequestQueue: processed request: ms %d status %d next %d', this.timeSinceLastRequest(), res.statusCode, this.timeUntilNextRequest());
-      this.scheduleNextRequest();
-    });
+      });
   }
 
   getRequestOptions(options) {
