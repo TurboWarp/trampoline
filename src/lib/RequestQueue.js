@@ -66,19 +66,13 @@ class RequestQueue {
     return this.backlog.length >= this.maxBacklog;
   }
 
-  getHeaders() {
-    return {
-      'User-Agent': 'https://github.com/forkphorus/trampoline'
-    };
-  }
-
   processNextRequest() {
     if (this.backlogEmpty()) {
       throw new APIError.InternalError('Cannot process next request: nothing in queue');
     }
     const { url, callback, options } = this.backlog.shift();
     this.lastRequest = this.now();
-    fetch(url, this.getRequestOptions(options))
+    fetch(url, this.getRequestOptions())
       .then(async (res) => {
         switch (res.status) {
           case 200: {
@@ -99,11 +93,11 @@ class RequestQueue {
       });
   }
 
-  getRequestOptions(options) {
-    const headers = this.getHeaders();
+  getRequestOptions() {
     return {
-      ...options,
-      headers,
+      headers: {
+        'User-Agent': 'https://github.com/forkphorus/trampoline'
+      },
       timeout: this.timeout,
       gzip: this.supportCompression,
       agent: RequestQueue.requestAgent,
