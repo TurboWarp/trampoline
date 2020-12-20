@@ -9,6 +9,7 @@
   "author": "Thomas Weber",
   "license": "MIT",
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
     "winston": "^3.3.3",

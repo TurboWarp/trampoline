@@ -1,5 +1,6 @@
 const https = require('https');
 const fetch = require('node-fetch').default;
+const AbortController = require('abort-controller').AbortController;
 const logger = require('../logger');
 const APIError = require('./APIError');
 
@@ -71,8 +72,17 @@ class RequestQueue {
       throw new APIError.InternalError('Cannot process next request: nothing in queue');
     }
     const { url, callback, options } = this.backlog.shift();
+
+    const abortController = new AbortController();
+    const timeout = setTimeout(() => {
+      abortController.abort();
+    }, this.timeout);
+
     this.lastRequest = this.now();
-    fetch(url, this.getRequestOptions())
+    fetch(url, {
+      ...this.getRequestOptions(),
+      signal: abortController.signal
+    })
       .then(async (res) => {
         switch (res.status) {
           case 200: {
@@ -85,10 +95,12 @@ class RequestQueue {
         }        
 
         logger.debug('RequestQueue: processed request: ms %d status %d next %d', this.timeSinceLastRequest(), res.status, this.timeUntilNextRequest());
-        this.scheduleNextRequest();
       })
       .catch((err) => {
         callback(new APIError.InternalError(err.code + ': ' + err.message), null);
+      })
+      .finally(() => {
+        clearTimeout(timeout);
         this.scheduleNextRequest();
       });
   }
@@ -98,7 +110,6 @@ class RequestQueue {
       headers: {
         'User-Agent': 'https://github.com/forkphorus/trampoline'
       },
-      timeout: this.timeout,
       gzip: this.supportCompression,
       agent: RequestQueue.requestAgent,
     };
