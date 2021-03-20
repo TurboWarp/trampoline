@@ -35,7 +35,7 @@ router.get('/studios/:id', (req, res) => {
   apiResponse(apiWrapper.getStudio(req.params.id), res);
 });
 router.get('/users/:name', (req, res) => {
-  apiResponse(apiWrapper.getStudio(req.params.name), res);
+  apiResponse(apiWrapper.getUser(req.params.name), res);
 });
 
 module.exports = router;
