@@ -10,7 +10,7 @@ module.exports.API_WRAPPER = {
   enabled: true,
   requestQueue: { throttle: 100, maxBacklog: 100 },
   projectCache: { name: 'project-meta', ttl: HOUR * 6, maxEntries: 2000 },
-  userCache: { name: 'user-meta', ttl: HOUR * 6, maxEntries: 50 },
+  userCache: { name: 'user-meta', ttl: HOUR * 6, maxEntries: 1000 },
   studioCache: { name: 'studio-meta', ttl: HOUR * 6, maxEntries: 100 },
 };
 
