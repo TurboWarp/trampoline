@@ -25,7 +25,10 @@ if (config.APP.enableStatic) {
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', config.APP.allowOrigins);
   res.header('Content-Security-Policy', 'default-src \'self\'')
-  res.header('X-Frame-Options', 'deny');
+  res.header('X-Frame-Options', 'DENY');
+  res.header('X-Content-Type-Options', 'nosniff');
+  res.header('Referrer-Policy', 'no-referrer');
+  res.header('Permissions-Policy', 'interest-cohort=()');
   logger.debug('Handling Request :: %s', req.path);
   next();
 });
