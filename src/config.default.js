@@ -9,7 +9,7 @@ const HOUR = MINUTE * 60;
 module.exports.API_WRAPPER = {
   enabled: true,
   requestQueue: { throttle: 100, maxBacklog: 100 },
-  projectCache: { name: 'project-meta', ttl: HOUR * 6, maxEntries: 2000 },
+  projectCache: { name: 'project-meta', ttl: HOUR * 3, maxEntries: 2000 },
   userCache: { name: 'user-meta', ttl: HOUR * 6, maxEntries: 1000 },
   studioCache: { name: 'studio-meta', ttl: HOUR * 6, maxEntries: 100 },
 };
@@ -23,7 +23,7 @@ module.exports.SITE_API_WRAPPER = {
 module.exports.CLOUD_WRAPPER = {
   enabled: true,
   requestQueue: { throttle: 500, maxBacklog: 100 },
-  logCache: { name: 'cloud-history', ttl: MINUTE * 30, maxEntries: 100 },
+  logCache: { name: 'cloud-history', ttl: HOUR * 3, maxEntries: 100 },
 };
 
 module.exports.STATS = {
