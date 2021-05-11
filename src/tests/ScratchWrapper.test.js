@@ -19,3 +19,9 @@ test('getStudio', () => {
     expect(data.id).toBe(3333);
   });
 });
+
+test('getStudioProjects', () => {
+  return wrapper.getStudioProjects('27205657', '0').then((data) => {
+    expect(Array.isArray(data)).toBe(true);
+  });
+});

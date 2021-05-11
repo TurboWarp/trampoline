@@ -37,5 +37,8 @@ router.get('/studios/:id', (req, res) => {
 router.get('/users/:name', (req, res) => {
   apiResponse(apiWrapper.getUser(req.params.name), res);
 });
+router.get('/studios/:id/projectstemporary/:offset', (req, res) => {
+  apiResponse(apiWrapper.getStudioProjects(req.params.id, req.params.offset), res);
+});
 
 module.exports = router;

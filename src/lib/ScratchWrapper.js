@@ -12,6 +12,7 @@ class ScratchWrapper {
     this.requestQueue = new RequestQueue(requestQueue);
     this.PROJECT_API = 'https://api.scratch.mit.edu/projects/$id';
     this.STUDIO_API = 'https://api.scratch.mit.edu/studios/$id';
+    this.STUDIO_PAGE_API = 'https://api.scratch.mit.edu/studios/$id/projects?offset=$offset';
     this.USER_API = 'https://api.scratch.mit.edu/users/$name';
   }
 
@@ -24,6 +25,12 @@ class ScratchWrapper {
   verifyUsername(username) {
     if (!ScratchUtils.isValidUsername(username)) {
       throw new APIError.BadRequest('Invalid username');
+    }
+  }
+
+  verifyOffset(offset) {
+    if (!ScratchUtils.isValidOffset(offset)) {
+      throw new APIError.BadRequest('Invalid offset');
     }
   }
 
@@ -57,6 +64,12 @@ class ScratchWrapper {
   async getUser(name) {
     this.verifyUsername(name);
     return this.jsonRequest(this.USER_API.replace('$name', name));
+  }
+
+  async getStudioProjects(studio, offset) {
+    this.verifyIdentifier(studio);
+    this.verifyOffset(offset);
+    return this.jsonRequest(this.STUDIO_PAGE_API.replace('$id', studio).replace('$offset', offset));
   }
 }
 

@@ -16,6 +16,10 @@ module.exports.isValidIdentifier = function isValidIdentifier(id) {
   return isInteger(id) && id >= 0;
 };
 
-module.exports.isValidPage = function isValidPage(id) {
-  return isInteger(id) && id >= 1;
+module.exports.isValidOffset = function isValidOffset(offset) {
+  return isInteger(offset) && offset >= 0;
+};
+
+module.exports.isValidPage = function isValidPage(page) {
+  return isInteger(page) && page >= 1;
 };

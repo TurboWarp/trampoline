@@ -12,6 +12,7 @@ module.exports.API_WRAPPER = {
   projectCache: { name: 'project-meta', ttl: HOUR * 3, maxEntries: 2000 },
   userCache: { name: 'user-meta', ttl: HOUR * 6, maxEntries: 1000 },
   studioCache: { name: 'studio-meta', ttl: HOUR * 6, maxEntries: 100 },
+  studioProjectsCache: { name: 'studio-projects', ttl: HOUR * 6, maxEntries: 100 },
 };
 
 module.exports.SITE_API_WRAPPER = {

@@ -7,11 +7,14 @@ class CachingScratchWrapper extends ScratchWrapper {
     projectCache,
     userCache,
     studioCache,
+    studioProjectsCache,
   }) {
     super({ requestQueue });
     this.projectCache = new ErrorTolerantComputedCache(projectCache, (key) => super.getProject(key));
     this.userCache = new ErrorTolerantComputedCache(userCache, (key) => super.getUser(key));
     this.studioCache = new ErrorTolerantComputedCache(studioCache, (key) => super.getStudio(key));
+    this.studioProjectsCache = new ErrorTolerantComputedCache(studioProjectsCache, (key) => super.getStudioProjects(key[0], key[1]));
+    this.studioProjectsCache.tupleKeys = true;
   }
 
   async getProject(key) {
@@ -24,6 +27,10 @@ class CachingScratchWrapper extends ScratchWrapper {
 
   async getUser(key) {
     return await this.userCache.computeIfMissing(key);
+  }
+
+  async getStudioProjects(id, offset) {
+    return await this.studioProjectsCache.computeIfMissing([id, offset]);
   }
 }
 
