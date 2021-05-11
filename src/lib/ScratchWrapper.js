@@ -12,7 +12,7 @@ class ScratchWrapper {
     this.requestQueue = new RequestQueue(requestQueue);
     this.PROJECT_API = 'https://api.scratch.mit.edu/projects/$id';
     this.STUDIO_API = 'https://api.scratch.mit.edu/studios/$id';
-    this.STUDIO_PAGE_API = 'https://api.scratch.mit.edu/studios/$id/projects?offset=$offset';
+    this.STUDIO_PAGE_API = 'https://api.scratch.mit.edu/studios/$id/projects?offset=$offset&limit=40';
     this.USER_API = 'https://api.scratch.mit.edu/users/$name';
   }
 
