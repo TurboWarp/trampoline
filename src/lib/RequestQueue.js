@@ -83,7 +83,7 @@ class RequestQueue {
       .then(async (res) => {
         switch (res.status) {
           case 200: {
-            const body = await (options.json ? res.json() : res.text());
+            const body = await res.buffer();
             callback(null, body);
             break;
           }

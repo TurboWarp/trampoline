@@ -1,5 +1,5 @@
 // @ts-nocheck
-const ScratchUtils = require('../lib/ScratchUtils');
+const ScratchUtils = require('../src/lib/ScratchUtils');
 
 test('isValidUsername', () => {
   expect(ScratchUtils.isValidUsername('griffpatch')).toBe(true);
@@ -28,14 +28,15 @@ test('isValidIdentifier', () => {
   expect(ScratchUtils.isValidIdentifier('')).toBe(false);
 });
 
-test('isValidPage', () => {
-  expect(ScratchUtils.isValidPage('1')).toBe(true);
-  expect(ScratchUtils.isValidPage('2')).toBe(true);
-  expect(ScratchUtils.isValidPage('6000')).toBe(true);
-  expect(ScratchUtils.isValidPage('0')).toBe(false);
-  expect(ScratchUtils.isValidPage('')).toBe(false);
-  expect(ScratchUtils.isValidPage(' ')).toBe(false);
-  expect(ScratchUtils.isValidPage('-3')).toBe(false);
-  expect(ScratchUtils.isValidPage('-3.5')).toBe(false);
-  expect(ScratchUtils.isValidPage('3.5')).toBe(false);
+test('isValidOffset', () => {
+  expect(ScratchUtils.isValidOffset('0')).toBe(true);
+  expect(ScratchUtils.isValidOffset('1')).toBe(true);
+  expect(ScratchUtils.isValidOffset('1.1')).toBe(false);
+  expect(ScratchUtils.isValidOffset('20')).toBe(true);
+  expect(ScratchUtils.isValidOffset('200')).toBe(true);
+  expect(ScratchUtils.isValidOffset('2000')).toBe(true);
+  expect(ScratchUtils.isValidOffset('20.0')).toBe(false);
+  expect(ScratchUtils.isValidOffset('-5')).toBe(false);
+  expect(ScratchUtils.isValidOffset('')).toBe(false);
+  expect(ScratchUtils.isValidOffset('egroij')).toBe(false);
 });

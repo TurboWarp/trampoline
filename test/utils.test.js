@@ -1,5 +1,5 @@
 // @ts-nocheck
-const utils = require('../utils');
+const utils = require('../src/utils');
 
 test('deepMerge', () => {
   const source = {

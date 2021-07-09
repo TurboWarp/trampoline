@@ -19,7 +19,3 @@ module.exports.isValidIdentifier = function isValidIdentifier(id) {
 module.exports.isValidOffset = function isValidOffset(offset) {
   return isInteger(offset) && offset >= 0;
 };
-
-module.exports.isValidPage = function isValidPage(page) {
-  return isInteger(page) && page >= 1;
-};

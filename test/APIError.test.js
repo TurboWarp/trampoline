@@ -1,5 +1,5 @@
 // @ts-nocheck
-const APIError = require('../lib/APIError');
+const APIError = require('../src/lib/APIError');
 
 // We'll just assume that APIError.BadRequest and the like have the correct magic numbers and strings in them.
 

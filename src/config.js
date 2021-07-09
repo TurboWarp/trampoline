@@ -1,33 +1,21 @@
-// To change the config, edit config.private.js in the repository root. (created after first run)
-// To change the default values, edit config.default.js
+module.exports.LOGGING = {
+  // console logging is enabled in debug mode (NODE_ENV !== production), disabled in production mode (NODE_ENV === production)
+  // set this to true to forcibly enable the console logging in production mode
+  forceEnableConsoleLogging: false,
+  // these options are passed directly into winston-daily-rotate-file
+  // see https://github.com/winstonjs/winston-daily-rotate-file#options
+  rotation: {
+    filename: '%DATE%.log',
+    // LOGS_DIRECTORY is used by systemd
+    dirname: process.env.LOGS_DIRECTORY || 'logs',
+    datePattern: 'YYYY-MM-DD',
+    maxFiles: '7d',
+    createSymlink: true,
+  },
+};
 
-const fs = require('fs');
-const path = require('path');
-const utils = require('./utils');
-
-// cannot use logger here as that would be a circular dependency: logger depends on config
-
-const defaultConfig = require('./config.default');
-const privateConfigPath = path.join(__dirname, '..', 'config.private.js');
-
-// Create the private config file, if it is missing.
-try {
-  fs.lstatSync(privateConfigPath);
-} catch (e) {
-  try {
-    fs.writeFileSync(privateConfigPath, '');
-  } catch (e) {
-    console.error('cannot create private config', e);
-  }
-}
-
-// Attempt to load the private config
-try {
-  // @ts-ignore
-  const privateConfig = require('../config.private');
-  utils.deepMerge(defaultConfig, privateConfig);
-} catch (e) {
-  console.error('cannot read private config', e);
-}
-
-module.exports = defaultConfig;
+module.exports.APP = {
+  allowOrigins: '*',
+  port: process.env.PORT || 8080,
+  unixSocketPermissions: -1,
+};
