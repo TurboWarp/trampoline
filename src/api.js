@@ -21,7 +21,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS index_cache ON cache (id);
 const queue = new RequestQueue();
 
 const now = () => Date.now();
-const getExpiry = () => now() + 1000 * 60;
+const getExpiry = () => now() + 1000 * 60 * 60;
 
 const wrapDatabaseResponse = (res) => ({
   status: res.status,
