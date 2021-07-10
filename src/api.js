@@ -22,8 +22,9 @@ CREATE TABLE IF NOT EXISTS cache (
 
 const queue = new RequestQueue();
 
+const HOUR = 1000 * 60 * 60;
+
 const now = () => Date.now();
-const getExpiry = () => now() + 1000 * 60 * 60;
 
 const wrapDatabaseResponse = (res) => ({
   status: res.status,
@@ -33,13 +34,13 @@ const wrapDatabaseResponse = (res) => ({
 
 const getStatement = db.prepare(`SELECT expires, status, data FROM cache WHERE id=?;`);
 const insertStatement = db.prepare(`INSERT OR REPLACE INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) RETURNING expires, status, data;`);
-const computeIfMissing = async (id, compute) => {
+const computeIfMissing = async (id, expiresIn, compute) => {
   const cached = getStatement.get(id);
   if (cached) {
     metrics.cacheHit++;
     return wrapDatabaseResponse(cached);
   }
-  const expires = getExpiry();
+  const expires = now() + expiresIn;
   try {
     metrics.cacheMiss++;
     // TODO: two well-timed requests for the same ID could cause problems here
@@ -62,7 +63,7 @@ const computeIfMissing = async (id, compute) => {
 const getProject = (projectId) => {
   const id = `projects/${projectId}`;
   metrics.projects++;
-  return computeIfMissing(id, () => {
+  return computeIfMissing(id, HOUR, () => {
     if (!ScratchUtils.isValidIdentifier(projectId)) throw new APIError.BadRequest('Invalid project ID');
     return queue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/`);
   });
@@ -71,7 +72,7 @@ const getProject = (projectId) => {
 const getUser = (username) => {
   const id = `users/${username}`;
   metrics.users++;
-  return computeIfMissing(id, () => {
+  return computeIfMissing(id, HOUR * 6, () => {
     if (!ScratchUtils.isValidUsername(username)) throw new APIError.BadRequest('Invalid username');
     return queue.queuePromise(`https://api.scratch.mit.edu/users/${username}/`);
   });
@@ -80,7 +81,7 @@ const getUser = (username) => {
 const getStudioPage = (studioId, offset) => {
   const id = `studios/${studioId}/${offset}`;
   metrics.studioPages++;
-  return computeIfMissing(id, () => {
+  return computeIfMissing(id, HOUR * 6, () => {
     if (!ScratchUtils.isValidIdentifier(studioId)) throw new APIError.BadRequest('Invalid studio ID');
     if (!ScratchUtils.isValidOffset(offset)) throw new APIError.BadRequest('Invalid offset');
     return queue.queuePromise(`https://api.scratch.mit.edu/studios/${studioId}/projects?offset=${offset}&limit=40`);
@@ -90,7 +91,7 @@ const getStudioPage = (studioId, offset) => {
 const getThumbnail = (projectId) => {
   const id = `projects/${projectId}/thumbnail`;
   metrics.thumbnails++;
-  return computeIfMissing(id, () => {
+  return computeIfMissing(id, HOUR * 6, () => {
     if (!ScratchUtils.isValidIdentifier(projectId)) throw new APIError.BadRequest('Invalid project ID');
     return queue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png`);
   });
@@ -99,7 +100,7 @@ const getThumbnail = (projectId) => {
 const getAsset = (md5ext) => {
   const id = `assets/${md5ext}`;
   metrics.assets++;
-  return computeIfMissing(id, () => {
+  return computeIfMissing(id, HOUR * 24, () => {
     if (!ScratchUtils.isValidAssetMd5ext(md5ext)) throw new APIError.BadRequest('Invalid asset ID');
     return queue.queuePromise(`https://assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`);
   });
