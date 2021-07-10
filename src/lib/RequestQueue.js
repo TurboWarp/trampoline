@@ -37,7 +37,7 @@ class RequestQueue {
     /** Whether this queue is currently processing requests rather than waiting for a request to be queued. */
     this.processing = false;
     /** The time in milliseconds between requests. */
-    this.throttle = 'throttle' in options ? options.throttle : 100;
+    this.throttle = 'throttle' in options ? options.throttle : 50;
     /** Maximum number of requests that can be queued. */
     this.maxBacklog = 'maxBacklog' in options ? options.maxBacklog : 100;
     /** Request timeout. */
