@@ -30,7 +30,7 @@ const wrapDatabaseResponse = (res) => ({
 });
 
 const getStatement = db.prepare(`SELECT expires, status, data FROM cache WHERE id=?;`);
-const insertStatement = db.prepare(`INSERT INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) RETURNING expires, status, data;`);
+const insertStatement = db.prepare(`INSERT INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING RETURNING expires, status, data;`);
 const computeIfMissing = async (id, compute) => {
   const cached = getStatement.get(id);
   if (cached) {
@@ -40,6 +40,7 @@ const computeIfMissing = async (id, compute) => {
   const expires = getExpiry();
   try {
     metrics.cacheMiss++;
+    // TODO: two well-timed requests for the same ID could cause problems here
     const result = await compute();
     return wrapDatabaseResponse(insertStatement.get(id, expires, 200, result));
   } catch (error) {
