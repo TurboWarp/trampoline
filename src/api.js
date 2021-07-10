@@ -137,7 +137,7 @@ const getAsset = (md5ext) => {
 };
 
 const deleteEntryStatement = db.prepare(`DELETE FROM cache WHERE expires < ?;`);
-const removeExpiredEntries = async () => {
+const removeExpiredEntries = () => {
   const result = deleteEntryStatement.run(now());
   if (result.changes !== 0) {
     logger.info(`Removed ${result.changes} expired cache entries.`);
