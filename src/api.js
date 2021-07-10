@@ -13,12 +13,11 @@ const db = new sqlite3(path.join(dbFolder, `trampoline-${VERSION}.db`));
 db.pragma('journal_mode = WAL');
 db.exec(`
 CREATE TABLE IF NOT EXISTS cache (
-  id TEXT UNIQUE NOT NULL,
+  id TEXT PRIMARY KEY NOT NULL,
   expires INTEGER NOT NULL,
   status INTEGER NOT NULL,
   data BLOB NOT NULL
 );
-CREATE UNIQUE INDEX IF NOT EXISTS index_cache ON cache (id);
 `);
 
 const queue = new RequestQueue();
