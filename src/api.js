@@ -32,8 +32,37 @@ const wrapDatabaseResponse = (res) => ({
   expires: res.expires
 });
 
+const ongoingComputes = new Map();
+const combineSimultaneousComputes = (id, compute) => new Promise((resolve, reject) => {
+  const callbacks = {
+    resolve,
+    reject
+  };
+  if (ongoingComputes.has(id)) {
+    ongoingComputes.get(id).callbacks.push(callbacks);
+    return;
+  }
+  const computeContext = {
+    callbacks: [callbacks]
+  };
+  ongoingComputes.set(id, computeContext);
+  compute()
+    .then((r) => {
+      ongoingComputes.delete(id);
+      for (const {resolve} of computeContext.callbacks) {
+        resolve(r);
+      }
+    })
+    .catch((r) => {
+      ongoingComputes.delete(id);
+      for (const {reject} of computeContext.callbacks) {
+        reject(r);
+      }
+    });
+});
+
 const getStatement = db.prepare(`SELECT expires, status, data FROM cache WHERE id=?;`);
-const insertStatement = db.prepare(`INSERT OR REPLACE INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) RETURNING expires, status, data;`);
+const insertStatement = db.prepare(`INSERT INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) RETURNING expires, status, data;`);
 const computeIfMissing = async (id, expiresIn, compute) => {
   const cached = getStatement.get(id);
   if (cached) {
@@ -43,9 +72,10 @@ const computeIfMissing = async (id, expiresIn, compute) => {
   const expires = now() + expiresIn;
   try {
     metrics.cacheMiss++;
-    // TODO: two well-timed requests for the same ID could cause problems here
-    const result = await compute();
-    return wrapDatabaseResponse(insertStatement.get(id, expires, 200, result));
+    return combineSimultaneousComputes(id, async () => {
+      const result = await compute();
+      return wrapDatabaseResponse(insertStatement.get(id, expires, 200, result));
+    });
   } catch (error) {
     logger.debug('' + ((error && error.stack) || error));
     const status = APIError.getStatus(error);
