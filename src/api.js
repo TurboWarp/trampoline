@@ -88,6 +88,24 @@ const getStudioPage = (studioId, offset) => {
   });
 };
 
+const getThumbnail = (projectId) => {
+  const id = `projects/${projectId}/thumbnail`;
+  metrics.thumbnails++;
+  return computeIfMissing(id, () => {
+    if (!ScratchUtils.isValidIdentifier(projectId)) throw new APIError.BadRequest('Invalid project ID');
+    return queue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png`);
+  });
+};
+
+const getAsset = (md5ext) => {
+  const id = `assets/${md5ext}`;
+  metrics.assets++;
+  return computeIfMissing(id, () => {
+    if (!ScratchUtils.isValidAssetMd5ext(md5ext)) throw new APIError.BadRequest('Invalid asset ID');
+    return queue.queuePromise(`https://assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`);
+  });
+};
+
 const deleteEntryStatement = db.prepare(`DELETE FROM cache WHERE expires < ?;`);
 const removeExpiredEntries = async () => {
   const result = deleteEntryStatement.run(now());
@@ -100,5 +118,7 @@ module.exports = {
   getProject,
   getUser,
   getStudioPage,
+  getThumbnail,
+  getAsset,
   removeExpiredEntries
 };

@@ -33,7 +33,6 @@ const handleResponse = (res, dbPromise) => {
   dbPromise
     .then(({status, data, expires}) => {
       res.status(status);
-      res.type('application/json');
       res.header('Expires', formatExpires(expires));
       res.send(data);
     })
@@ -45,15 +44,40 @@ const handleResponse = (res, dbPromise) => {
 };
 
 app.get('/proxy/projects/:id', (req, res) => {
+  res.type('application/json');
   handleResponse(res, api.getProject(req.params.id));
 });
 
 app.get('/proxy/users/:username', (req, res) => {
+  res.type('application/json');
   handleResponse(res, api.getUser(req.params.username));
 });
 
 app.get('/proxy/studios/:id/projectstemporary/:offset', (req, res) => {
+  res.type('application/json');
   handleResponse(res, api.getStudioPage(req.params.id, req.params.offset));
+});
+
+app.get('/thumbnails/:id.png', (req, res) => {
+  res.type('image/png');
+  handleResponse(res, api.getThumbnail(req.params.id));
+});
+
+app.get('/assets/:md5ext.svg', (req, res) => {
+  res.type('image/svg+xml');
+  handleResponse(res, api.getAsset(`${req.params.md5ext}.svg`));
+});
+app.get('/assets/:md5ext.png', (req, res) => {
+  res.type('image/png');
+  handleResponse(res, api.getAsset(`${req.params.md5ext}.png`));
+});
+app.get('/assets/:md5ext.wav', (req, res) => {
+  res.type('audio/wav');
+  handleResponse(res, api.getAsset(`${req.params.md5ext}.wav`));
+});
+app.get('/assets/:md5ext.mp3', (req, res) => {
+  res.type('audio/mpeg');
+  handleResponse(res, api.getAsset(`${req.params.md5ext}.mp3`));
 });
 
 app.get('/cloud-proxy*', (req, res) => {

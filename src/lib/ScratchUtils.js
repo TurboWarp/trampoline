@@ -19,3 +19,11 @@ module.exports.isValidIdentifier = function isValidIdentifier(id) {
 module.exports.isValidOffset = function isValidOffset(offset) {
   return isInteger(offset) && offset >= 0;
 };
+
+module.exports.isValidAssetMd5ext = function isValidAssetMd5ext(md5ext) {
+  const parts = md5ext.split('.');
+  if (parts.length !== 2) {
+    return false;
+  }
+  return parts[0].length === 32 && !/[^a-z0-9]/.test(parts[0]) && parts[1];
+};
