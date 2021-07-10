@@ -1,8 +1,9 @@
+const fs = require('fs');
 const api = require('./api');
 const logger = require('./logger');
 const app = require('./server');
 const config = require('./config');
-const fs = require('fs');
+const metrics = require('./metrics');
 
 const port = config.APP.port;
 app.listen(port, function() {
@@ -21,3 +22,9 @@ app.listen(port, function() {
 api.removeExpiredEntries();
 const JANITOR_INTERVAL = 1000 * 60;
 setInterval(api.removeExpiredEntries, JANITOR_INTERVAL);
+
+const METRICS_INTERVAL = 1000 * 60;
+setInterval(() => {
+  metrics.print();
+  metrics.reset();
+}, METRICS_INTERVAL);

@@ -3,6 +3,7 @@ const APIError = require('./lib/APIError');
 const RequestQueue = require('./lib/RequestQueue');
 const ScratchUtils = require('./lib/ScratchUtils');
 const logger = require('./logger');
+const {metrics} = require('./metrics');
 
 const VERSION = 1;
 const db = new sqlite3(`trampoline-${VERSION}.db`);
@@ -32,9 +33,13 @@ const getStatement = db.prepare(`SELECT expires, status, data FROM cache WHERE i
 const insertStatement = db.prepare(`INSERT INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) RETURNING expires, status, data;`);
 const computeIfMissing = async (id, compute) => {
   const cached = getStatement.get(id);
-  if (cached) return wrapDatabaseResponse(cached);
+  if (cached) {
+    metrics.cacheHit++;
+    return wrapDatabaseResponse(cached);
+  }
   const expires = getExpiry();
   try {
+    metrics.cacheMiss++;
     const result = await compute();
     return wrapDatabaseResponse(insertStatement.get(id, expires, 200, result));
   } catch (error) {
@@ -52,6 +57,7 @@ const computeIfMissing = async (id, compute) => {
 
 const getProject = (projectId) => {
   const id = `projects/${projectId}`;
+  metrics.projects++;
   return computeIfMissing(id, () => {
     if (!ScratchUtils.isValidIdentifier(projectId)) throw new APIError.BadRequest('Invalid project ID');
     return queue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/`);
@@ -60,6 +66,7 @@ const getProject = (projectId) => {
 
 const getUser = (username) => {
   const id = `users/${username}`;
+  metrics.users++;
   return computeIfMissing(id, () => {
     if (!ScratchUtils.isValidUsername(username)) throw new APIError.BadRequest('Invalid username');
     return queue.queuePromise(`https://api.scratch.mit.edu/users/${username}/`);
@@ -68,6 +75,7 @@ const getUser = (username) => {
 
 const getStudioPage = (studioId, offset) => {
   const id = `studios/${studioId}/${offset}`;
+  metrics.studioPages++;
   return computeIfMissing(id, () => {
     if (!ScratchUtils.isValidIdentifier(studioId)) throw new APIError.BadRequest('Invalid studio ID');
     if (!ScratchUtils.isValidOffset(offset)) throw new APIError.BadRequest('Invalid offset');
