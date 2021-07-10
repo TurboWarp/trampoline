@@ -23,7 +23,7 @@ api.removeExpiredEntries();
 const JANITOR_INTERVAL = 1000 * 60;
 setInterval(api.removeExpiredEntries, JANITOR_INTERVAL);
 
-const METRICS_INTERVAL = 1000 * 60;
+const METRICS_INTERVAL = 1000 * 60 * 60;
 setInterval(() => {
   metrics.print();
   metrics.reset();
