@@ -2,6 +2,7 @@ const api = require('./api');
 const logger = require('./logger');
 const app = require('./server');
 const config = require('./config');
+const fs = require('fs');
 
 const port = config.APP.port;
 app.listen(port, function() {
