@@ -27,7 +27,16 @@ app.use((req, res, next) => {
   next();
 });
 
-const formatExpires = (unix) => new Date(+unix).toUTCString();
+const formatExpires = (unix) => {
+  const date = new Date(unix);
+  const now = Date.now();
+  // It's possible an expired response is returned or that it has become outdated since it was received.
+  const until = Math.max(0, date.getTime() - now);
+  return {
+    expires: date.toUTCString(),
+    cacheControl: `public, max-age=${Math.round(until / 1000)}, immutable`
+  };
+};
 
 const handleResponse = (res, dbPromise) => {
   dbPromise
@@ -36,7 +45,10 @@ const handleResponse = (res, dbPromise) => {
       if (status !== 200) {
         res.type('application/json');
       }
-      res.header('Expires', formatExpires(expires));
+      const formattedExpires = formatExpires(expires);
+      // TODO: consider dropping `Expires` as `Cache-Control` takes precedence
+      res.header('Expires', formattedExpires.expires);
+      res.header('Cache-Control', formattedExpires.cacheControl);
       res.send(data);
     })
     .catch((error) => {

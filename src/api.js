@@ -29,7 +29,7 @@ const now = () => Date.now();
 const wrapDatabaseResponse = (res) => ({
   status: res.status,
   data: res.data,
-  expires: res.expires
+  expires: +res.expires
 });
 
 const ongoingComputes = new Map();
