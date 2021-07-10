@@ -47,6 +47,7 @@ const computeIfMissing = async (id, compute) => {
     const result = await compute();
     return wrapDatabaseResponse(insertStatement.get(id, expires, 200, result));
   } catch (error) {
+    logger.debug('' + ((error && error.stack) || error));
     const status = APIError.getStatus(error);
     const errorCode = APIError.getCode(error);
     const message = APIError.getMessage(error);
