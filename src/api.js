@@ -1,3 +1,4 @@
+const path = require('path');
 const sqlite3 = require('better-sqlite3');
 const APIError = require('./lib/APIError');
 const RequestQueue = require('./lib/RequestQueue');
@@ -6,7 +7,9 @@ const logger = require('./logger');
 const {metrics} = require('./metrics');
 
 const VERSION = 1;
-const db = new sqlite3(`trampoline-${VERSION}.db`);
+// CACHE_DIRECTORY can be set by systemd
+const dbFolder = process.env.CACHE_DIRECTORY || path.join(__dirname, '..');
+const db = new sqlite3(path.join(dbFolder, `trampoline-${VERSION}.db`));
 db.pragma('journal_mode = WAL');
 db.exec(`
 CREATE TABLE IF NOT EXISTS cache (
