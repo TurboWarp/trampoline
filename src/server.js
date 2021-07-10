@@ -33,12 +33,16 @@ const handleResponse = (res, dbPromise) => {
   dbPromise
     .then(({status, data, expires}) => {
       res.status(status);
+      if (status !== 200) {
+        res.type('application/json');
+      }
       res.header('Expires', formatExpires(expires));
       res.send(data);
     })
     .catch((error) => {
       logger.error('' + ((error && error.stack) || error));
       res.status(500);
+      res.type('text/plain');
       res.send('Internal server error');
     });
 };
