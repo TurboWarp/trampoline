@@ -32,7 +32,7 @@ const wrapDatabaseResponse = (res) => ({
 });
 
 const getStatement = db.prepare(`SELECT expires, status, data FROM cache WHERE id=?;`);
-const insertStatement = db.prepare(`INSERT INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING RETURNING expires, status, data;`);
+const insertStatement = db.prepare(`INSERT OR REPLACE INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) RETURNING expires, status, data;`);
 const computeIfMissing = async (id, compute) => {
   const cached = getStatement.get(id);
   if (cached) {
