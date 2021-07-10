@@ -36,8 +36,8 @@ const handleResponse = (res, dbPromise) => {
       res.header('Expires', formatExpires(expires));
       res.send(data);
     })
-    .catch((err) => {
-      logger.error(`${err}`);
+    .catch((error) => {
+      logger.error('' + ((error && error.stack) || error));
       res.status(500);
       res.send('Internal server error');
     });
