@@ -20,7 +20,10 @@ CREATE TABLE IF NOT EXISTS cache (
 );
 `);
 
-const queue = new RequestQueue();
+const queue = new RequestQueue({
+  // Scratch suggests no more than 10 req/sec
+  throttle: 100
+});
 
 const HOUR = 1000 * 60 * 60;
 
