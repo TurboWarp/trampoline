@@ -105,7 +105,7 @@ class RequestQueue {
   getRequestOptions() {
     return {
       headers: {
-        'User-Agent': 'https://github.com/forkphorus/trampoline'
+        'User-Agent': 'https://github.com/TurboWarp/trampoline'
       },
       agent: RequestQueue.requestAgent,
     };
