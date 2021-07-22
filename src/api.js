@@ -102,7 +102,7 @@ const getProject = (projectId) => {
 const getUser = (username) => {
   const id = `users/${username}`;
   metrics.users++;
-  return computeIfMissing(id, HOUR * 6, () => {
+  return computeIfMissing(id, HOUR * 24, () => {
     if (!ScratchUtils.isValidUsername(username)) throw new APIError.BadRequest('Invalid username');
     return queue.queuePromise(`https://api.scratch.mit.edu/users/${username}/`);
   });
