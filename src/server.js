@@ -79,23 +79,6 @@ app.get('/thumbnails/:id.png', (req, res) => {
   handleResponse(res, api.getThumbnail(req.params.id));
 });
 
-app.get('/assets/:md5ext.svg', (req, res) => {
-  res.type('image/svg+xml');
-  handleResponse(res, api.getAsset(`${req.params.md5ext}.svg`));
-});
-app.get('/assets/:md5ext.png', (req, res) => {
-  res.type('image/png');
-  handleResponse(res, api.getAsset(`${req.params.md5ext}.png`));
-});
-app.get('/assets/:md5ext.wav', (req, res) => {
-  res.type('audio/wav');
-  handleResponse(res, api.getAsset(`${req.params.md5ext}.wav`));
-});
-app.get('/assets/:md5ext.mp3', (req, res) => {
-  res.type('audio/mpeg');
-  handleResponse(res, api.getAsset(`${req.params.md5ext}.mp3`));
-});
-
 app.get('/cloud-proxy*', (req, res) => {
   res.status(404);
   res.send('not implemented');
