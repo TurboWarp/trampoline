@@ -8,6 +8,7 @@ const config = require('./config');
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
 app.set('x-powered-by', false);
+app.set('query parser', (q) => new URLSearchParams(q));
 
 app.use((req, res, next) => {
   res.header('X-Frame-Options', 'DENY');
@@ -67,6 +68,12 @@ app.get('/proxy/projects/:id', (req, res) => {
 app.get('/proxy/users/:username', (req, res) => {
   res.type('application/json');
   handleResponse(res, api.getUser(req.params.username));
+});
+
+app.get('/proxy/studios/:id/projects', (req, res) => {
+  const offset = req.query.get('offset') || '0';
+  res.type('application/json');
+  handleResponse(res, api.getStudioPage(req.params.id, offset));
 });
 
 app.get('/proxy/studios/:id/projectstemporary/:offset', (req, res) => {
