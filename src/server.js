@@ -1,6 +1,7 @@
 const express = require('express');
 const logger = require('./logger');
 const api = require('./api');
+const resizeImage = require('./resize');
 
 const app = express();
 const config = require('./config');
@@ -81,9 +82,23 @@ app.get('/proxy/studios/:id/projectstemporary/:offset', (req, res) => {
   handleResponse(res, api.getStudioPage(req.params.id, req.params.offset));
 });
 
-app.get('/thumbnails/:id.png', (req, res) => {
-  res.type('image/png');
-  handleResponse(res, api.getThumbnail(req.params.id));
+app.get('/thumbnails/:id', (req, res) => {
+  const width = req.query.get('width') || '480';
+  const height = req.query.get('height') || '360';
+  const format = req.accepts('image/webp') || 'image/jpeg';
+  res.type(format);
+  res.header('Vary', 'Accepts');
+  handleResponse(res, api.getThumbnail(req.params.id).then((response) => {
+    if (response.status !== 200) {
+      return response;
+    }
+    return resizeImage(response.data, +width, +height, format)
+      .then((newData) => {
+        response.data = newData;
+        return response;
+      });
+    // TODO: catch errors and respond with better message
+  }));
 });
 
 app.get('/cloud-proxy*', (req, res) => {
