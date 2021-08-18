@@ -122,7 +122,7 @@ const getStudioPage = (studioId, offset) => {
 };
 
 const getThumbnail = (projectId) => {
-  const id = `projects/${projectId}/thumbnail`;
+  const id = `thumbnails/${projectId}`;
   metrics.thumbnails++;
   return computeIfMissing(id, HOUR * 6, () => {
     if (!ScratchUtils.isValidIdentifier(projectId)) throw new APIError.BadRequest('Invalid project ID');
