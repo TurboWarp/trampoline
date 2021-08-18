@@ -10,7 +10,7 @@ const resizeImage = (buffer, width, height, format) => {
   sh.resize(width, height);
   if (format === 'image/webp') {
     sh.webp({quality: 80});
-  } else if (foramt === 'image/jpeg') {
+  } else if (format === 'image/jpeg') {
     sh.jpeg({quality: 80});
   } else if (format === 'image/png') {
     sh.png({quality: 80});
