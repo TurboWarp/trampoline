@@ -106,7 +106,7 @@ const computeIfMissing = async (id, expiresIn, compute) => {
   }
 };
 
-const getProject = (projectId) => {
+const getProject = async (projectId) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
   const id = `projects/${projectId}`;
   metrics.projects++;
@@ -115,7 +115,7 @@ const getProject = (projectId) => {
   });
 };
 
-const getUser = (username) => {
+const getUser = async (username) => {
   if (!ScratchUtils.isValidUsername(username)) return wrapError(new APIError.BadRequest('Invalid username'));
   const id = `users/${username}`;
   metrics.users++;
@@ -124,7 +124,7 @@ const getUser = (username) => {
   });
 };
 
-const getStudioPage = (studioId, offset) => {
+const getStudioPage = async (studioId, offset) => {
   if (!ScratchUtils.isValidIdentifier(studioId)) return wrapError(new APIError.BadRequest('Invalid studio ID'));
   if (!ScratchUtils.isValidOffset(offset)) return wrapError(new APIError.BadRequest('Invalid offset'));
   const id = `studios/${studioId}/${offset}`;
@@ -134,7 +134,7 @@ const getStudioPage = (studioId, offset) => {
   });
 };
 
-const getThumbnail = (projectId) => {
+const getThumbnail = async (projectId) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
   const id = `thumbnails/${projectId}`;
   metrics.thumbnails++;
