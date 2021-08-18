@@ -2,8 +2,11 @@ const log = require('./logger');
 const sharp = require('sharp');
 
 const resizeImage = async (buffer, width, height, format) => {
-  if (width > 480 || width <= 0 || isNaN(width) || height > 360 || height <= 0 || isNaN(height)) {
-    throw new Error('invalid dimensions');
+  if (typeof width !== 'number' || width > 480 || width <= 0 || !Number.isFinite(width) || Math.floor(width) !== width) {
+    throw new Error('Width is invalid');
+  }
+  if (typeof height !== 'number' || height > 360 || height <= 0 || !Number.isFinite(height) || Math.floor(height) !== height) {
+    throw new Error('Height is invalid');
   }
   log.debug(`Resizing image to ${width}x${height} ${format}`);
   const sh = sharp(buffer);
