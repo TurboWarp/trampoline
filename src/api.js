@@ -20,8 +20,11 @@ CREATE TABLE IF NOT EXISTS cache (
 );
 `);
 
-const queue = new RequestQueue({
+const apiQueue = new RequestQueue({
   // Scratch suggests no more than 10 req/sec
+  throttle: 100
+});
+const thumbnailQueue = new RequestQueue({
   throttle: 100
 });
 
@@ -98,7 +101,7 @@ const getProject = (projectId) => {
   metrics.projects++;
   return computeIfMissing(id, HOUR, () => {
     if (!ScratchUtils.isValidIdentifier(projectId)) throw new APIError.BadRequest('Invalid project ID');
-    return queue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/`);
+    return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/`);
   });
 };
 
@@ -107,7 +110,7 @@ const getUser = (username) => {
   metrics.users++;
   return computeIfMissing(id, HOUR * 24, () => {
     if (!ScratchUtils.isValidUsername(username)) throw new APIError.BadRequest('Invalid username');
-    return queue.queuePromise(`https://api.scratch.mit.edu/users/${username}/`);
+    return apiQueue.queuePromise(`https://api.scratch.mit.edu/users/${username}/`);
   });
 };
 
@@ -117,7 +120,7 @@ const getStudioPage = (studioId, offset) => {
   return computeIfMissing(id, HOUR * 6, () => {
     if (!ScratchUtils.isValidIdentifier(studioId)) throw new APIError.BadRequest('Invalid studio ID');
     if (!ScratchUtils.isValidOffset(offset)) throw new APIError.BadRequest('Invalid offset');
-    return queue.queuePromise(`https://api.scratch.mit.edu/studios/${studioId}/projects?offset=${offset}&limit=40`);
+    return apiQueue.queuePromise(`https://api.scratch.mit.edu/studios/${studioId}/projects?offset=${offset}&limit=40`);
   });
 };
 
@@ -126,7 +129,7 @@ const getThumbnail = (projectId) => {
   metrics.thumbnails++;
   return computeIfMissing(id, HOUR * 6, () => {
     if (!ScratchUtils.isValidIdentifier(projectId)) throw new APIError.BadRequest('Invalid project ID');
-    return queue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png`);
+    return thumbnailQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png`);
   });
 };
 
@@ -135,7 +138,7 @@ const getAsset = (md5ext) => {
   metrics.assets++;
   return computeIfMissing(id, HOUR * 24, () => {
     if (!ScratchUtils.isValidAssetMd5ext(md5ext)) throw new APIError.BadRequest('Invalid asset ID');
-    return queue.queuePromise(`https://assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`);
+    return apiQueue.queuePromise(`https://assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`);
   });
 };
 
