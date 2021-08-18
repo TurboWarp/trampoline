@@ -38,6 +38,19 @@ const wrapDatabaseResponse = (res) => ({
   expires: +res.expires
 });
 
+const wrapError = (error) => {
+  logger.debug('' + ((error && error.stack) || error));
+  const status = APIError.getStatus(error);
+  const message = APIError.getMessage(error);
+  const data = Buffer.from(JSON.stringify({
+    error: message
+  }));
+  return {
+    status,
+    data
+  };
+};
+
 const ongoingComputes = new Map();
 const combineSimultaneousComputes = (id, compute) => new Promise((resolve, reject) => {
   const callbacks = {
@@ -94,47 +107,47 @@ const computeIfMissing = async (id, expiresIn, compute) => {
 };
 
 const getProject = (projectId) => {
+  if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
   const id = `projects/${projectId}`;
   metrics.projects++;
   return computeIfMissing(id, HOUR, () => {
-    if (!ScratchUtils.isValidIdentifier(projectId)) throw new APIError.BadRequest('Invalid project ID');
     return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/`);
   });
 };
 
 const getUser = (username) => {
+  if (!ScratchUtils.isValidUsername(username)) return wrapError(new APIError.BadRequest('Invalid username'));
   const id = `users/${username}`;
   metrics.users++;
   return computeIfMissing(id, HOUR * 24, () => {
-    if (!ScratchUtils.isValidUsername(username)) throw new APIError.BadRequest('Invalid username');
     return apiQueue.queuePromise(`https://api.scratch.mit.edu/users/${username}/`);
   });
 };
 
 const getStudioPage = (studioId, offset) => {
+  if (!ScratchUtils.isValidIdentifier(studioId)) return wrapError(new APIError.BadRequest('Invalid studio ID'));
+  if (!ScratchUtils.isValidOffset(offset)) return wrapError(new APIError.BadRequest('Invalid offset'));
   const id = `studios/${studioId}/${offset}`;
   metrics.studioPages++;
   return computeIfMissing(id, HOUR * 6, () => {
-    if (!ScratchUtils.isValidIdentifier(studioId)) throw new APIError.BadRequest('Invalid studio ID');
-    if (!ScratchUtils.isValidOffset(offset)) throw new APIError.BadRequest('Invalid offset');
     return apiQueue.queuePromise(`https://api.scratch.mit.edu/studios/${studioId}/projects?offset=${offset}&limit=40`);
   });
 };
 
 const getThumbnail = (projectId) => {
+  if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
   const id = `thumbnails/${projectId}`;
   metrics.thumbnails++;
   return computeIfMissing(id, HOUR * 6, () => {
-    if (!ScratchUtils.isValidIdentifier(projectId)) throw new APIError.BadRequest('Invalid project ID');
     return thumbnailQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png`);
   });
 };
 
 const getAsset = (md5ext) => {
+  if (!ScratchUtils.isValidAssetMd5ext(md5ext)) return wrapError(new APIError.BadRequest('Invalid asset ID'));
   const id = `assets/${md5ext}`;
   metrics.assets++;
   return computeIfMissing(id, HOUR * 24, () => {
-    if (!ScratchUtils.isValidAssetMd5ext(md5ext)) throw new APIError.BadRequest('Invalid asset ID');
     return apiQueue.queuePromise(`https://assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`);
   });
 };

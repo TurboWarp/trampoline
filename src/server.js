@@ -47,10 +47,12 @@ const handleResponse = (res, dbPromise) => {
       if (status !== 200) {
         res.type('application/json');
       }
-      const formattedExpires = formatExpires(expires);
-      // TODO: consider dropping `Expires` as `Cache-Control` takes precedence
-      res.header('Expires', formattedExpires.expires);
-      res.header('Cache-Control', formattedExpires.cacheControl);
+      if (expires) {
+        const formattedExpires = formatExpires(expires);
+        // TODO: consider dropping `Expires` as `Cache-Control` takes precedence
+        res.header('Expires', formattedExpires.expires);
+        res.header('Cache-Control', formattedExpires.cacheControl);
+      }
       res.send(data);
     })
     .catch((error) => {
