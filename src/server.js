@@ -97,8 +97,14 @@ app.get('/thumbnails/:id', (req, res) => {
       .then((newData) => {
         response.data = newData;
         return response;
+      })
+      .catch((error) => {
+        response.status = 400;
+        response.data = Buffer.from(JSON.stringify({
+          error: '' + error
+        }));
+        return response;
       });
-    // TODO: catch errors and respond with better message
   }));
 });
 
