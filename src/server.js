@@ -88,7 +88,7 @@ app.get('/thumbnails/:id', (req, res) => {
   // probably not spec compliant but good enough
   const format = (req.get('accept') || '').includes('image/webp') ? 'image/webp' : 'image/jpeg';
   res.type(format);
-  res.header('Vary', 'Accepts');
+  res.header('Vary', 'Accept');
   handleResponse(res, api.getThumbnail(req.params.id).then((response) => {
     if (response.status !== 200) {
       return response;
