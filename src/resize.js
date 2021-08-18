@@ -1,9 +1,9 @@
 const log = require('./logger');
 const sharp = require('sharp');
 
-const resizeImage = (buffer, width, height, format) => {
+const resizeImage = async (buffer, width, height, format) => {
   if (width > 480 || width <= 0 || isNaN(width) || height > 360 || height <= 0 || isNaN(height)) {
-    return Promise.reject(new Error('invalid dimensions'));
+    throw new Error('invalid dimensions');
   }
   log.debug(`Resizing image to ${width}x${height} ${format}`);
   const sh = sharp(buffer);
@@ -15,7 +15,7 @@ const resizeImage = (buffer, width, height, format) => {
   } else if (format === 'image/png') {
     sh.png({quality: 90});
   } else {
-    return Promise.reject(new Error('Invalid format'));
+    throw new Error('Invalid format');
   }
   return sh.toBuffer();
 };
