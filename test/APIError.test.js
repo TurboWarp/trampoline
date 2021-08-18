@@ -12,15 +12,6 @@ test('getMessage', () => {
   expect(APIError.getMessage({help: true})).toBe('[object Object]');
 });
 
-test('getCode', () => {
-  expect(APIError.getCode(new APIError('CODE', 100, ''))).toBe('CODE');
-  expect(APIError.getCode(new Error('Uh oh'))).toBe('UNKNOWN');
-  expect(APIError.getCode('uh oh')).toBe('UNKNOWN');
-  expect(APIError.getCode(null)).toBe('UNKNOWN');
-  expect(APIError.getCode(undefined)).toBe('UNKNOWN');
-  expect(APIError.getCode({help: true})).toBe('UNKNOWN');
-});
-
 test('getStatus', () => {
   expect(APIError.getStatus(new APIError('', 780, ''))).toBe(780);
   expect(APIError.getStatus(new Error(''))).toBe(500);

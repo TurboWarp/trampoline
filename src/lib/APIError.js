@@ -1,40 +1,38 @@
 class APIError extends Error {
   /**
-   * @param {string} code Type of error.
    * @param {number} status HTTP status code for the error.
-   * @param {string} message The error message, which may be shown to the user.
+   * @param {string} message The error message, which may be shown to users.
    */
-  constructor(code, status, message) {
+  constructor(status, message) {
     super(`${message}`);
-    this.code = code;
     this.status = status;
-    this.name = 'APIError.' + code;
+    this.name = 'APIError';
   }
 }
 
 /** An error that indicates something went wrong internally */
 APIError.InternalError = class extends APIError {
-  constructor(message) { super('INTERNAL_ERROR', 500, message); }
+  constructor(message) { super(500, message); }
 };
 /** An error that indicates too many requests are being made in total or by an individual user */
 APIError.TooManyRequests = class extends APIError {
   /** @param {string} message */
-  constructor(message) { super('TOO_MANY_REQUESTS', 429, message); }
+  constructor(message) { super(429, message); }
 };
 /** An error that indicates there is something wrong with the request */
 APIError.BadRequest = class extends APIError {
   /** @param {string} message */
-  constructor(message) { super('BAD_REQUEST', 400, message); }
+  constructor(message) { super(400, message); }
 };
 /** An error that indicates that the item asked for does not exist */
 APIError.NotFound = class extends APIError {
   /** @param {string} message */
-  constructor(message) { super('NOT_FOUND', 404, message); }
+  constructor(message) { super(404, message); }
 };
 /** An error that indicates that an upstream API returned a strange response */
 APIError.UpstreamError = class extends APIError {
   /** @param {string} message */
-  constructor(message) { super('UPSTREAM_ERROR', 500, message); }
+  constructor(message) { super(500, message); }
 };
 
 /**
@@ -45,16 +43,6 @@ APIError.UpstreamError = class extends APIError {
 APIError.getStatus = function(error) {
   if (error && typeof error.status === 'number') return error.status;
   return 500;
-};
-
-/**
- * Get the error code ("BAD_REQUEST", "INTERNAL_ERROR", etc.) for an error.
- * @param {any} error
- * @returns {string}
- */
-APIError.getCode = function(error) {
-  if (error && typeof error.code === 'string') return error.code;
-  return 'UNKNOWN';
 };
 
 /**
