@@ -4,7 +4,6 @@ const APIError = require('../src/lib/APIError');
 // We'll just assume that APIError.BadRequest and the like have the correct magic numbers and strings in them.
 
 test('getMessage', () => {
-  expect(APIError.getMessage(new APIError.BadRequest('Help!'))).toBe('Help!');
   expect(APIError.getMessage(new Error('Help!'))).toBe('Help!');
   expect(APIError.getMessage('Help!')).toBe('Help!');
   expect(APIError.getMessage(null)).toBe('null');
@@ -13,7 +12,6 @@ test('getMessage', () => {
 });
 
 test('getStatus', () => {
-  expect(APIError.getStatus(new APIError('', 780, ''))).toBe(780);
   expect(APIError.getStatus(new Error(''))).toBe(500);
   expect(APIError.getStatus('Hello')).toBe(500);
   expect(APIError.getStatus(null)).toBe(500);
