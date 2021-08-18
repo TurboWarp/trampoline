@@ -4,6 +4,7 @@ const APIError = require('./lib/APIError');
 const RequestQueue = require('./lib/RequestQueue');
 const ScratchUtils = require('./lib/ScratchUtils');
 const logger = require('./logger');
+const resizeImage = require('./resize');
 const {metrics} = require('./metrics');
 
 const VERSION = 1;
@@ -143,6 +144,20 @@ const getThumbnail = async (projectId) => {
   });
 };
 
+const getResizedThumbnail = async (projectId, width, height, format) => {
+  if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
+  const id = `thumbnails/${projectId}/${width}/${height}/${format}`;
+  return computeIfMissing(id, HOUR * 1, () => {
+    return getThumbnail(projectId)
+      .then((result) => {
+        if (result.status !== 200) {
+          throw new APIError.BadRequest('Could not load thumbnail');
+        }
+        return resizeImage(result.data, width, height, format);
+      });
+  });
+};
+
 const getAsset = (md5ext) => {
   if (!ScratchUtils.isValidAssetMd5ext(md5ext)) return wrapError(new APIError.BadRequest('Invalid asset ID'));
   const id = `assets/${md5ext}`;
@@ -165,6 +180,7 @@ module.exports = {
   getUser,
   getStudioPage,
   getThumbnail,
+  getResizedThumbnail,
   getAsset,
   removeExpiredEntries
 };

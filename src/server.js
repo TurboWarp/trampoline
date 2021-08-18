@@ -1,7 +1,6 @@
 const express = require('express');
 const logger = require('./logger');
 const api = require('./api');
-const resizeImage = require('./resize');
 
 const app = express();
 const config = require('./config');
@@ -91,23 +90,7 @@ app.get('/thumbnails/:id', (req, res) => {
   const format = (req.get('accept') || '').includes('image/webp') ? 'image/webp' : 'image/jpeg';
   res.type(format);
   res.header('Vary', 'Accept');
-  handleResponse(res, api.getThumbnail(req.params.id).then((response) => {
-    if (response.status !== 200) {
-      return response;
-    }
-    return resizeImage(response.data, +width, +height, format)
-      .then((newData) => {
-        response.data = newData;
-        return response;
-      })
-      .catch((error) => {
-        response.status = 400;
-        response.data = Buffer.from(JSON.stringify({
-          error: '' + error
-        }));
-        return response;
-      });
-  }));
+  handleResponse(res, api.getResizedThumbnail(req.params.id, +width, +height, format));
 });
 
 app.get('/cloud-proxy*', (req, res) => {
