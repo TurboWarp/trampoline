@@ -85,7 +85,8 @@ app.get('/proxy/studios/:id/projectstemporary/:offset', (req, res) => {
 app.get('/thumbnails/:id', (req, res) => {
   const width = req.query.get('width') || '480';
   const height = req.query.get('height') || '360';
-  const format = req.accepts('image/webp') || 'image/jpeg';
+  // probably not spec compliant but good enough
+  const format = (req.get('accept') || '').includes('image/webp') ? 'image/webp' : 'image/jpeg';
   res.type(format);
   res.header('Vary', 'Accepts');
   handleResponse(res, api.getThumbnail(req.params.id).then((response) => {
