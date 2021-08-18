@@ -88,7 +88,7 @@ class RequestQueue {
             break;
           }
           case 404: callback(new APIError.NotFound('Resource does not exist'), null); break;
-          default: callback(new APIError.UpstreamError('HTTP Status Code: ' + res.status), null); break;
+          default: callback(new APIError.UpstreamError('Upstream returned status code: ' + res.status), null); break;
         }
 
         logger.debug('RequestQueue: processed request: ms %d status %d next %d', this.timeSinceLastRequest(), res.status, this.timeUntilNextRequest());
