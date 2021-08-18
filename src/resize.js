@@ -9,11 +9,11 @@ const resizeImage = (buffer, width, height, format) => {
   const sh = sharp(buffer);
   sh.resize(width, height);
   if (format === 'image/webp') {
-    sh.webp({quality: 80});
+    sh.webp({quality: 90});
   } else if (format === 'image/jpeg') {
-    sh.jpeg({quality: 80});
+    sh.jpeg({quality: 90});
   } else if (format === 'image/png') {
-    sh.png({quality: 80});
+    sh.png({quality: 90});
   } else {
     return Promise.reject(new Error('Invalid format'));
   }
