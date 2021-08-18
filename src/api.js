@@ -85,12 +85,9 @@ const computeIfMissing = async (id, expiresIn, compute) => {
   } catch (error) {
     logger.debug('' + ((error && error.stack) || error));
     const status = APIError.getStatus(error);
-    const errorCode = APIError.getCode(error);
     const message = APIError.getMessage(error);
     const data = Buffer.from(JSON.stringify({
-      status,
-      error: errorCode,
-      message
+      error: message
     }));
     return wrapDatabaseResponse(insertStatement.get(id, expires, status, data));
   }
