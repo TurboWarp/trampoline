@@ -138,7 +138,6 @@ const getStudioPage = async (studioId, offset) => {
 const getThumbnail = async (projectId) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
   const id = `thumbnails/${projectId}`;
-  metrics.thumbnails++;
   return computeIfMissing(id, HOUR * 6, () => {
     return thumbnailQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png`);
   });
@@ -146,6 +145,7 @@ const getThumbnail = async (projectId) => {
 
 const getResizedThumbnail = async (projectId, width, height, format) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
+  metrics.thumbnails++;
   const id = `thumbnails/${projectId}/${width}/${height}/${format}`;
   return computeIfMissing(id, HOUR * 1, () => {
     return getThumbnail(projectId)
