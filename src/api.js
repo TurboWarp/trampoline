@@ -148,7 +148,7 @@ const getResizedThumbnail = async (projectId, width, height, format) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
   metrics.thumbnails++;
   const id = `thumbnails/${projectId}/${width}/${height}/${format}`;
-  return computeIfMissing(id, HOUR * 1, () => {
+  return computeIfMissing(id, HOUR * 3, () => {
     return getThumbnail(projectId)
       .then((result) => {
         if (result.status !== 200) {
