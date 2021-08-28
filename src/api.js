@@ -146,6 +146,12 @@ const getThumbnail = async (projectId) => {
 
 const getResizedThumbnail = async (projectId, width, height, format) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
+  if (typeof width !== 'number' || width > 480 || width <= 0 || !Number.isFinite(width) || Math.floor(width) !== width) {
+    return wrapError(new APIError.BadRequest('Width is invalid'));
+  }
+  if (typeof height !== 'number' || height > 360 || height <= 0 || !Number.isFinite(height) || Math.floor(height) !== height) {
+    return wrapError(new APIError.BadRequest('Height is invalid'));
+  }
   metrics.thumbnails++;
   const id = `thumbnails/${projectId}/${width}/${height}/${format}`;
   return computeIfMissing(id, HOUR * 3, () => {
