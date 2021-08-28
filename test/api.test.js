@@ -78,7 +78,11 @@ test('thumbnails', async () => {
     .expect(400);
   await request.get('/thumbnails/1?width=0&height=0')
     .expect(400);
+  await request.get('/thumbnails/1?width=-4')
+    .expect(400);
   await request.get('/thumbnails/1?width=100.5&height=80')
+    .expect(400);
+  await request.get('/thumbnails/1?width=a')
     .expect(400);
   await request.get('/thumbnails/1?width=240')
     .expect(200)
