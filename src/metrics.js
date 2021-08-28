@@ -6,6 +6,7 @@ const metrics = {
   projects: 0,
   users: 0,
   studioPages: 0,
+  thumbnailRaw: 0,
   thumbnails: 0,
   assets: 0
 };
@@ -20,7 +21,7 @@ const print = () => {
   logger.info('*** Metrics ***');
   logger.info(`hit: ${metrics.cacheHit}  miss: ${metrics.cacheMiss}`);
   logger.info(`projects: ${metrics.projects}  users: ${metrics.users}  studioPages: ${metrics.studioPages}`);
-  logger.info(`thumbnails: ${metrics.thumbnails}  assets: ${metrics.assets}`);
+  logger.info(`thumbnails: ${metrics.thumbnails}  raw: ${metrics.thumbnailRaw}  assets: ${metrics.assets}`);
 };
 
 module.exports = {
