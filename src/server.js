@@ -93,14 +93,16 @@ app.get('/thumbnails/:id', (req, res) => {
   handleResponse(res, api.getResizedThumbnail(req.params.id, +width, +height, format));
 });
 
-app.get('/cloud-proxy*', (req, res) => {
+app.get('/cloud-proxy/*', (req, res) => {
   res.status(404);
-  res.send('not implemented');
+  res.type('text/plain');
+  res.send('cloud proxy has been removed');
 });
 
-app.get('/site-proxy*', (req, res) => {
+app.get('/site-proxy/*', (req, res) => {
   res.status(404);
-  res.send('not implemented');
+  res.type('text/plain');
+  res.send('site proxy has been removed');
 });
 
 app.use((req, res) => {
