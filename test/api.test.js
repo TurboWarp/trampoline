@@ -17,12 +17,26 @@ test('user API', async () => {
   expect(res.body.id).toBe(1882674);
 });
 
-test('studio pages API', async () => {
-  const res = await request.get('/proxy/studios/15926401/projectstemporary/0')
+test('studio projectstemporary', async () => {
+  const firstPage = await request.get('/proxy/studios/15926401/projectstemporary/0')
     .expect('Content-Type', /json/)
     .expect(200);
-  expect(Array.isArray(res.body)).toBe(true);
-  expect(res.body.length > 10).toBe(true);
+  expect(Array.isArray(firstPage.body)).toBe(true);
+  expect(firstPage.body.length > 10).toBe(true);
+  const secondPage = await request.get('/proxy/studios/15926401/projectstemporary/1')
+    .expect(200);
+  expect(secondPage.body[0]).toEqual(firstPage.body[1]);
+});
+
+test('studio projects', async () => {
+  const firstPage = await request.get('/proxy/studios/15926401/projects?offset=0')
+    .expect('Content-Type', /json/)
+    .expect(200);
+  expect(Array.isArray(firstPage.body)).toBe(true);
+  expect(firstPage.body.length > 10).toBe(true);
+  const secondPage = await request.get('/proxy/studios/15926401/projects?offset=1')
+    .expect(200);
+  expect(secondPage.body[0]).toEqual(firstPage.body[1]);
 });
 
 test('thumbnails', async () => {
