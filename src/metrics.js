@@ -8,6 +8,7 @@ const metrics = {
   studioPages: 0,
   thumbnailRaw: 0,
   thumbnails: 0,
+  translate: 0,
   assets: 0
 };
 
@@ -21,6 +22,7 @@ const print = () => {
   logger.info('*** Metrics ***');
   logger.info(`hit: ${metrics.cacheHit}  miss: ${metrics.cacheMiss}`);
   logger.info(`projects: ${metrics.projects}  users: ${metrics.users}  studioPages: ${metrics.studioPages}`);
+  logger.info(`translate: ${metrics.translate}`);
   logger.info(`thumbnails: ${metrics.thumbnails}  raw: ${metrics.thumbnailRaw}  assets: ${metrics.assets}`);
 };
 

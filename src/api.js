@@ -165,6 +165,20 @@ const getResizedThumbnail = async (projectId, width, height, format) => {
   });
 };
 
+const getTranslate = async (language, text) => {
+  if (typeof language !== 'string') return wrapError(new APIError.BadRequest('Invalid language'));
+  if (typeof text !== 'string') return wrapError(new APIError.BadRequest('Invalid text'));
+  metrics.translate++;
+  // Stubbed
+  return wrapDatabaseResponse({
+    status: 200,
+    data: Buffer.from(JSON.stringify({
+      result: text
+    })),
+    expires: now() + HOUR * 24
+  });
+};
+
 const getAsset = (md5ext) => {
   if (!ScratchUtils.isValidAssetMd5ext(md5ext)) return wrapError(new APIError.BadRequest('Invalid asset ID'));
   const id = `assets/${md5ext}`;
@@ -188,6 +202,7 @@ module.exports = {
   getStudioPage,
   getThumbnail,
   getResizedThumbnail,
+  getTranslate,
   getAsset,
   removeExpiredEntries
 };

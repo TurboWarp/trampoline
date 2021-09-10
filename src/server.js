@@ -93,6 +93,12 @@ app.get('/thumbnails/:id', (req, res) => {
   handleResponse(res, api.getResizedThumbnail(req.params.id, +width, +height, format));
 });
 
+app.get('/translate/translate', (req, res) => {
+  const language = req.query.get('language');
+  const text = req.query.get('text');
+  handleResponse(res, api.getTranslate(language, text));
+});
+
 app.get('/cloud-proxy/*', (req, res) => {
   res.status(404);
   res.type('text/plain');
