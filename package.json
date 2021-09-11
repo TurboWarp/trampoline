@@ -13,7 +13,7 @@
     "better-sqlite3": "^7.4.3",
     "express": "^4.17.1",
     "node-fetch": "^2.6.2",
-    "sharp": "^0.29.0",
+    "sharp": "^0.29.1",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.0"
   },
