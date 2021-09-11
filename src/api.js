@@ -25,8 +25,10 @@ const apiQueue = new RequestQueue({
   // Scratch suggests no more than 10 req/sec
   throttle: 100
 });
-const thumbnailQueue = new RequestQueue({
-  throttle: 100
+const imageQueue = new RequestQueue({
+  // This queue only makes requests to cdn2.scratch.mit.edu
+  // Loading a studio page in a browser will cause >40 requests to there, so clearly we can be a bit more aggressive.
+  throttle: 50
 });
 
 const HOUR = 1000 * 60 * 60;
@@ -140,7 +142,7 @@ const getThumbnail = async (projectId) => {
   metrics.thumbnailRaw++;
   const id = `thumbnails/${projectId}`;
   return computeIfMissing(id, HOUR * 6, () => {
-    return thumbnailQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png`);
+    return imageQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png`);
   });
 };
 
@@ -170,7 +172,7 @@ const getAvatar = async (userId) => {
   metrics.avatars++;
   const id = `avatars/${userId}`;
   return computeIfMissing(id, HOUR * 6, () => {
-    return thumbnailQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/user/${userId}_32x32.png?v=`);
+    return imageQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/user/${userId}_32x32.png?v=`);
   });
 };
 
