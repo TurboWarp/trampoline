@@ -207,6 +207,10 @@ const removeExpiredEntries = () => {
   }
 };
 
+const removeEverything = () => {
+  db.prepare(`DELETE FROM cache;`).run();
+};
+
 module.exports = {
   getProject,
   getUser,
@@ -216,5 +220,6 @@ module.exports = {
   getAvatar,
   getTranslate,
   getAsset,
-  removeExpiredEntries
+  removeExpiredEntries,
+  removeEverything
 };
