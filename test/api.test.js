@@ -39,16 +39,17 @@ test('studio projects', async () => {
   expect(secondPage.body[0]).toEqual(firstPage.body[1]);
 });
 
+const expectImage = (res, format, width, height) => {
+  return sharp(res.body)
+    .metadata()
+    .then((metadata) => {
+      if (metadata.format !== format) throw new Error('Unexpected format');
+      if (metadata.width !== width) throw new Error('Unexpected width');
+      if (metadata.height !== height) throw new Error('Unexpected height');
+    });
+};
+
 test('thumbnails', async () => {
-  const expectImage = (res, format, width, height) => {
-    return sharp(res.body)
-      .metadata()
-      .then((metadata) => {
-        if (metadata.format !== format) throw new Error('Unexpected format');
-        if (metadata.width !== width) throw new Error('Unexpected width');
-        if (metadata.height !== height) throw new Error('Unexpected height');
-      });
-  };
   await request.get('/thumbnails/1')
     .expect('Content-Type', 'image/jpeg')
     .expect(200)
@@ -87,4 +88,11 @@ test('thumbnails', async () => {
   await request.get('/thumbnails/1?width=240')
     .expect(200)
     .then((res) => expectImage(res, 'jpeg', 240, 360));
+});
+
+test('avatars', async () => {
+  await request.get('/avatars/139')
+    .expect('Content-Type', 'image/png')
+    .expect(200)
+    .then((res) => expectImage(res, 'png', 32, 32));
 });

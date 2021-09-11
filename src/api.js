@@ -165,6 +165,15 @@ const getResizedThumbnail = async (projectId, width, height, format) => {
   });
 };
 
+const getAvatar = async (userId) => {
+  if (!ScratchUtils.isValidIdentifier(userId)) return wrapError(new APIError.BadRequest('Invalid user ID'));
+  metrics.avatars++;
+  const id = `avatars/${userId}`;
+  return computeIfMissing(id, HOUR * 6, () => {
+    return thumbnailQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/user/${userId}_32x32.png?v=`);
+  });
+};
+
 const getTranslate = async (language, text) => {
   if (typeof language !== 'string') return wrapError(new APIError.BadRequest('Invalid language'));
   if (typeof text !== 'string') return wrapError(new APIError.BadRequest('Invalid text'));
@@ -202,6 +211,7 @@ module.exports = {
   getStudioPage,
   getThumbnail,
   getResizedThumbnail,
+  getAvatar,
   getTranslate,
   getAsset,
   removeExpiredEntries

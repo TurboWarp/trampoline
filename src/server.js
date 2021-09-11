@@ -93,6 +93,11 @@ app.get('/thumbnails/:id', (req, res) => {
   handleResponse(res, api.getResizedThumbnail(req.params.id, +width, +height, format));
 });
 
+app.get('/avatars/:id', (req, res) => {
+  res.type('image/png');
+  handleResponse(res, api.getAvatar(req.params.id));
+});
+
 app.get('/translate/translate', (req, res) => {
   const language = req.query.get('language');
   const text = req.query.get('text');
