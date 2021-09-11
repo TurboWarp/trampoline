@@ -101,6 +101,7 @@ app.get('/avatars/:id', (req, res) => {
 app.get('/translate/translate', (req, res) => {
   const language = req.query.get('language');
   const text = req.query.get('text');
+  res.type('application/json');
   handleResponse(res, api.getTranslate(language, text));
 });
 

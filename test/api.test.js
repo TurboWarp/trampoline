@@ -96,3 +96,10 @@ test('avatars', async () => {
     .expect(200)
     .then((res) => expectImage(res, 'png', 32, 32));
 });
+
+test('translate', async () => {
+  const data = await request.get('/translate/translate?language=en&text=test')
+    .expect('Content-Type', /json/)
+    .expect(200);
+  expect(data.body.result).toBe('test');
+});
