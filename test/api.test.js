@@ -62,7 +62,7 @@ const expectImage = (res, format, width, height) => {
     });
 };
 
-test('thumbnails', async () => {
+test.skip('thumbnails', async () => {
   await request.get('/thumbnails/1')
     .expect('Content-Type', 'image/jpeg')
     .expect(200)
@@ -104,7 +104,7 @@ test('thumbnails', async () => {
   expect(metrics.thumbnails).toBe(6);
 });
 
-test('avatars', async () => {
+test.skip('avatars', async () => {
   await request.get('/avatars/139')
     .expect('Content-Type', 'image/png')
     .expect(200)
@@ -112,12 +112,10 @@ test('avatars', async () => {
   expect(metrics.avatars).toBe(1);
 });
 
-/*
-test('translate', async () => {
+test.skip('translate', async () => {
   const data = await request.get('/translate/translate?language=en&text=test')
     .expect('Content-Type', /json/)
     .expect(200);
   expect(data.body.result).toBe('test');
   expect(metrics.translate).toBe(1);
 });
-*/
