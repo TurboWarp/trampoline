@@ -1,5 +1,6 @@
 const path = require('path');
 const sqlite3 = require('better-sqlite3');
+const scratchTranslateExtensionLanguages = require('scratch-translate-extension-languages/languages.json').spokenLanguages;
 const APIError = require('./lib/APIError');
 const RequestQueue = require('./lib/RequestQueue');
 const ScratchUtils = require('./lib/ScratchUtils');
@@ -29,6 +30,9 @@ const imageQueue = new RequestQueue({
   // This queue only makes requests to cdn2.scratch.mit.edu
   // Loading a studio page in a browser will cause >40 requests to there, so clearly we can be a bit more aggressive.
   throttle: 50
+});
+const translateQueue = new RequestQueue({
+  throttle: 100
 });
 
 const HOUR = 1000 * 60 * 60;
@@ -176,17 +180,31 @@ const getAvatar = async (userId) => {
   });
 };
 
+const isMeaninglessTranslation = (text) => (
+  (/\d/.test(text) && !isNaN(text)) ||
+  text.length > 100 ||
+  text.length <= 1
+);
+
 const getTranslate = async (language, text) => {
   if (typeof language !== 'string') return wrapError(new APIError.BadRequest('Invalid language'));
+  if (!Object.prototype.hasOwnProperty.call(scratchTranslateExtensionLanguages, language)) return wrapError(new APIError.BadRequest('Unknown language'));
   if (typeof text !== 'string') return wrapError(new APIError.BadRequest('Invalid text'));
   metrics.translate++;
-  // Stubbed
-  return wrapDatabaseResponse({
-    status: 200,
-    data: Buffer.from(JSON.stringify({
-      result: text
-    })),
-    expires: now() + HOUR * 24
+  const expires = HOUR * 24 * 3;
+  if (isMeaninglessTranslation(text)) {
+    return wrapDatabaseResponse({
+      status: 200,
+      data: Buffer.from(JSON.stringify({
+        result: text
+      })),
+      expires: now() + expires
+    });
+  }
+  const id = `translate/${language}/${text}`;
+  return computeIfMissing(id, expires, () => {
+    logger.info(`fetching translate: ${language} ${text}`);
+    return translateQueue.queuePromise(`https://translate-service.scratch.mit.edu/translate?language=${language}&text=${encodeURIComponent(text)}`);
   });
 };
 
