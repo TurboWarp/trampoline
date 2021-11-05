@@ -190,9 +190,10 @@ const getTranslate = async (language, text) => {
   if (typeof language !== 'string') return wrapError(new APIError.BadRequest('Invalid language'));
   if (!Object.prototype.hasOwnProperty.call(scratchTranslateExtensionLanguages, language)) return wrapError(new APIError.BadRequest('Unknown language'));
   if (typeof text !== 'string') return wrapError(new APIError.BadRequest('Invalid text'));
-  metrics.translate++;
   const expires = HOUR * 24 * 30;
+  metrics.translate++;
   if (isMeaninglessTranslation(text)) {
+    metrics.translateMeaningless++;
     return wrapDatabaseResponse({
       status: 200,
       data: Buffer.from(JSON.stringify({
@@ -203,7 +204,7 @@ const getTranslate = async (language, text) => {
   }
   const id = `translate/${language}/${text}`;
   return computeIfMissing(id, expires, () => {
-    logger.info(`fetching translate: ${language} ${text}`);
+    metrics.translateNew++;
     return translateQueue.queuePromise(`https://translate-service.scratch.mit.edu/translate?language=${language}&text=${encodeURIComponent(text)}`);
   });
 };

@@ -10,6 +10,8 @@ const metrics = {
   thumbnails: 0,
   avatars: 0,
   translate: 0,
+  translateMeaningless: 0,
+  translateNew: 0,
   assets: 0
 };
 
@@ -23,7 +25,7 @@ const print = () => {
   logger.info('*** Metrics ***');
   logger.info(`hit: ${metrics.cacheHit}  miss: ${metrics.cacheMiss}`);
   logger.info(`projects: ${metrics.projects}  users: ${metrics.users}  studioPages: ${metrics.studioPages}`);
-  logger.info(`translate: ${metrics.translate}`);
+  logger.info(`translate: ${metrics.translate}  meaningless: ${metrics.translateMeaningless}  new: ${metrics.translateNew}`);
   logger.info(`avatars: ${metrics.avatars}`);
   logger.info(`thumbnails: ${metrics.thumbnails}  raw: ${metrics.thumbnailRaw}  assets: ${metrics.assets}`);
 };
