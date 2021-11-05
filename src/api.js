@@ -191,7 +191,7 @@ const getTranslate = async (language, text) => {
   if (!Object.prototype.hasOwnProperty.call(scratchTranslateExtensionLanguages, language)) return wrapError(new APIError.BadRequest('Unknown language'));
   if (typeof text !== 'string') return wrapError(new APIError.BadRequest('Invalid text'));
   metrics.translate++;
-  const expires = HOUR * 24 * 3;
+  const expires = HOUR * 24 * 30;
   if (isMeaninglessTranslation(text)) {
     return wrapDatabaseResponse({
       status: 200,
