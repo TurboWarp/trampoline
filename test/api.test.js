@@ -112,6 +112,7 @@ test('avatars', async () => {
   expect(metrics.avatars).toBe(1);
 });
 
+/*
 test('translate', async () => {
   const data = await request.get('/translate/translate?language=en&text=test')
     .expect('Content-Type', /json/)
@@ -119,3 +120,4 @@ test('translate', async () => {
   expect(data.body.result).toBe('test');
   expect(metrics.translate).toBe(1);
 });
+*/
