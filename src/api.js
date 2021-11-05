@@ -97,8 +97,8 @@ const computeIfMissing = async (id, expiresIn, compute) => {
   }
   const expires = now() + expiresIn;
   try {
-    metrics.cacheMiss++;
     return await combineSimultaneousComputes(id, async () => {
+      metrics.cacheMiss++;
       const result = await compute();
       return wrapDatabaseResponse(insertStatement.get(id, expires, 200, result));
     });
