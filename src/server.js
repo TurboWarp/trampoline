@@ -8,6 +8,7 @@ const config = require('./config');
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
 app.set('x-powered-by', false);
+app.set('trust proxy', 'loopback');
 app.set('query parser', (q) => new URLSearchParams(q));
 
 app.use((req, res, next) => {
