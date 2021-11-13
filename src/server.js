@@ -1,6 +1,7 @@
 const express = require('express');
 const logger = require('./logger');
 const api = require('./api');
+const rateLimit = require('./rate-limit');
 
 const app = express();
 const config = require('./config');
@@ -99,7 +100,7 @@ app.get('/avatars/:id', (req, res) => {
   handleResponse(res, api.getAvatar(req.params.id));
 });
 
-app.get('/translate/translate', (req, res) => {
+app.get('/translate/translate', rateLimit({ requests: 500 }), (req, res) => {
   const language = req.query.get('language');
   const text = req.query.get('text');
   res.type('application/json');
