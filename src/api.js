@@ -204,6 +204,7 @@ const getTranslate = async (language, text) => {
   }
   const id = `translate/${language}/${text}`;
   return computeIfMissing(id, expires, () => {
+    logger.info(`l10n: ${language} ${text}`);
     metrics.translateNew++;
     return translateQueue.queuePromise(`https://translate-service.scratch.mit.edu/translate?language=${language}&text=${encodeURIComponent(text)}`);
   });
