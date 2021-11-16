@@ -1,13 +1,16 @@
 const logger = require('./logger');
+const {isTest} = require('./environment');
 
 module.exports = ({
   requests
 }) => {
   const memory = new Map();
 
-  setInterval(() => {
-    memory.clear();
-  }, 1000 * 60 * 60);
+  if (!isTest) {
+    setInterval(() => {
+      memory.clear();
+    }, 1000 * 60 * 60);
+  }
 
   return (req, res, next) => {
     const ip = req.ip;
