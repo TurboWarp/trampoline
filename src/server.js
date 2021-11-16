@@ -100,10 +100,17 @@ app.get('/avatars/:id', (req, res) => {
   handleResponse(res, api.getAvatar(req.params.id));
 });
 
-app.get('/translate/translate', rateLimit({ requests: 500 }), (req, res) => {
+app.get('/translate/translate', rateLimit({ requests: 1000 }), (req, res) => {
   const language = req.query.get('language');
   const text = req.query.get('text');
   res.type('application/json');
+  if (req.rateLimited) {
+    // TODO: we should still try to hit the cache
+    res.send(JSON.stringify({
+      result: text
+    }));
+    return;
+  }
   handleResponse(res, api.getTranslate(language, text));
 });
 

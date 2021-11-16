@@ -15,8 +15,12 @@ module.exports = ({
   return (req, res, next) => {
     const ip = req.ip;
     const current = memory.get(ip) || 0;
-    if (current === requests) {
-      logger.warn(`an IP starting with ${ip.split('.')[0]} has exceeded rate limit tests`);
+    if (current >= requests) {
+      req.rateLimited = true;
+      if (current === requests) {
+        // for debugging purposes
+        logger.warn('rate limit exceeded');
+      }
     }
     memory.set(ip, current + 1);
     next();
