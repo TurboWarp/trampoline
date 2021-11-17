@@ -106,6 +106,7 @@ app.get('/translate/translate', rateLimit({ requests: 1000 }), (req, res) => {
   res.type('application/json');
   if (req.rateLimited) {
     // TODO: we should still try to hit the cache
+    res.status(429);
     res.send(JSON.stringify({
       result: text
     }));
