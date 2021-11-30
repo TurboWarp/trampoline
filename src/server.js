@@ -100,7 +100,7 @@ app.get('/avatars/:id', (req, res) => {
   handleResponse(res, api.getAvatar(req.params.id));
 });
 
-app.get('/translate/translate', rateLimit({ requests: 1000 }), (req, res) => {
+app.get('/translate/translate', rateLimit({ requests: 500 }), (req, res) => {
   const language = req.query.get('language');
   const text = req.query.get('text');
   res.type('application/json');
