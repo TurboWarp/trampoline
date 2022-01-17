@@ -12,7 +12,7 @@
     "abort-controller": "^3.0.0",
     "better-sqlite3": "^7.4.4",
     "express": "^4.17.1",
-    "node-fetch": "^2.6.5",
+    "node-fetch": "^2.6.7",
     "scratch-translate-extension-languages": "0.0.20191118205314",
     "sharp": "^0.29.3",
     "winston": "^3.4.0",
