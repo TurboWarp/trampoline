@@ -11,7 +11,7 @@
   "dependencies": {
     "abort-controller": "^3.0.0",
     "better-sqlite3": "^7.5.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "node-fetch": "^2.6.7",
     "scratch-translate-extension-languages": "0.0.20191118205314",
     "sharp": "^0.30.1",
