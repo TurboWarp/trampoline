@@ -89,18 +89,23 @@ const combineSimultaneousComputes = (id, compute) => new Promise((resolve, rejec
 
 const getStatement = db.prepare(`SELECT expires, status, data FROM cache WHERE id=?;`);
 const insertStatement = db.prepare(`INSERT INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) RETURNING expires, status, data;`);
-const computeIfMissing = async (id, expiresIn, compute) => {
+const computeIfMissing = async (id, expiration, compute) => {
   const cached = getStatement.get(id);
   if (cached) {
     metrics.cacheHit++;
     return wrapDatabaseResponse(cached);
   }
-  const expires = now() + expiresIn;
+  const getExpiration = (success) => {
+    if (typeof expiration === 'function') {
+      return now() + expiration(success);
+    }
+    return now() + expiration;
+  };
   try {
     return await combineSimultaneousComputes(id, async () => {
       metrics.cacheMiss++;
       const result = await compute();
-      return wrapDatabaseResponse(insertStatement.get(id, expires, 200, result));
+      return wrapDatabaseResponse(insertStatement.get(id, getExpiration(true), 200, result));
     });
   } catch (error) {
     logger.debug('' + ((error && error.stack) || error));
@@ -109,7 +114,7 @@ const computeIfMissing = async (id, expiresIn, compute) => {
     const data = Buffer.from(JSON.stringify({
       error: message
     }));
-    return wrapDatabaseResponse(insertStatement.get(id, expires, status, data));
+    return wrapDatabaseResponse(insertStatement.get(id, getExpiration(false), status, data));
   }
 };
 
@@ -203,7 +208,13 @@ const getTranslate = async (language, text) => {
     });
   }
   const id = `translate/${language}/${text}`;
-  return computeIfMissing(id, expires, () => {
+  return computeIfMissing(id, (success) => {
+    console.log(success);
+    if (success) {
+      return HOUR * 24 * 30;
+    }
+    return HOUR;
+  }, () => {
     logger.info(`l10n: ${language} ${text}`);
     metrics.translateNew++;
     return translateQueue.queuePromise(`https://translate-service.scratch.mit.edu/translate?language=${language}&text=${encodeURIComponent(text)}`);
