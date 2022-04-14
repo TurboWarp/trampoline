@@ -87,9 +87,13 @@ const combineSimultaneousComputes = (id, compute) => new Promise((resolve, rejec
     });
 });
 
+const defaultErrorGenerator = (error) => ({
+  error: APIError.getMessage(error)
+});
+
 const getStatement = db.prepare(`SELECT expires, status, data FROM cache WHERE id=?;`);
 const insertStatement = db.prepare(`INSERT INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) RETURNING expires, status, data;`);
-const computeIfMissing = async (id, expiration, compute) => {
+const computeIfMissing = async (id, expiration, compute, errorGenerator=defaultErrorGenerator) => {
   const cached = getStatement.get(id);
   if (cached) {
     metrics.cacheHit++;
@@ -110,10 +114,7 @@ const computeIfMissing = async (id, expiration, compute) => {
   } catch (error) {
     logger.debug('' + ((error && error.stack) || error));
     const status = APIError.getStatus(error);
-    const message = APIError.getMessage(error);
-    const data = Buffer.from(JSON.stringify({
-      error: message
-    }));
+    const data = Buffer.from(JSON.stringify(errorGenerator(error)));
     return wrapDatabaseResponse(insertStatement.get(id, getExpiration(false), status, data));
   }
 };
@@ -217,7 +218,12 @@ const getTranslate = async (language, text) => {
   }, () => {
     logger.info(`l10n: ${language} ${text}`);
     metrics.translateNew++;
-    return translateQueue.queuePromise(`https://translate-service.scratch.mit.edu/translate?language=${language}&text=${encodeURIComponent(text)}`);
+    return translateQueue.queuePromise(`https://translate-service2.scratch.mit.edu/translate?language=${language}&text=${encodeURIComponent(text)}`);
+  }, (error) => {
+    return {
+      error: APIError.getMessage(error),
+      result: text
+    };
   });
 };
 
