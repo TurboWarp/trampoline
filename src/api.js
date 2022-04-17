@@ -210,7 +210,6 @@ const getTranslate = async (language, text) => {
   }
   const id = `translate/${language}/${text}`;
   return computeIfMissing(id, (success) => {
-    console.log(success);
     if (success) {
       return HOUR * 24 * 30;
     }
@@ -218,7 +217,7 @@ const getTranslate = async (language, text) => {
   }, () => {
     logger.info(`l10n: ${language} ${text}`);
     metrics.translateNew++;
-    return translateQueue.queuePromise(`https://translate-service2.scratch.mit.edu/translate?language=${language}&text=${encodeURIComponent(text)}`);
+    return translateQueue.queuePromise(`https://translate-service.scratch.mit.edu/translate?language=${language}&text=${encodeURIComponent(text)}`);
   }, (error) => {
     return {
       error: APIError.getMessage(error),
