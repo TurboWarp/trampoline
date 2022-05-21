@@ -115,6 +115,12 @@ app.get('/translate/translate', rateLimit({ requests: 500 }), (req, res) => {
   handleResponse(res, api.getTranslate(language, text));
 });
 
+app.get('/projects/:id', (req, res) => {
+  // Most things we serve will be JSON
+  res.type('application/json');
+  handleResponse(res, api.getProjectData(req.params.id));
+});
+
 app.get('/cloud-proxy/*', (req, res) => {
   res.status(404);
   res.type('text/plain');

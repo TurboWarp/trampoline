@@ -235,6 +235,23 @@ const getAsset = (md5ext) => {
   });
 };
 
+const getProjectData = async (id) => {
+  // this whole thing is a terrible hack
+  if (!ScratchUtils.isValidIdentifier(id)) return wrapError(new APIError.BadRequest('Invalid project ID'));
+  const meta = await getProjectMeta(id);
+  if (meta.status !== 200) {
+    return wrapError(new APIError.NotFound('Cannot get project metadata; project probably is unshared'));
+  }
+  const jsonData = JSON.parse(meta.data.toString('utf-8'));
+  const token = jsonData.project_token;
+  const data = await apiQueue.queuePromise(`https://projects.scratch.mit.edu/${id}?token=${token}`);
+  return {
+    status: 200,
+    data,
+    expires: 0
+  };
+};
+
 const deleteEntryStatement = db.prepare(`DELETE FROM cache WHERE expires < ?;`);
 const removeExpiredEntries = () => {
   deleteEntryStatement.run(now());
@@ -253,6 +270,7 @@ module.exports = {
   getAvatar,
   getTranslate,
   getAsset,
+  getProjectData,
   removeExpiredEntries,
   removeEverything
 };
