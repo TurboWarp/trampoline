@@ -20,6 +20,9 @@ CREATE TABLE IF NOT EXISTS cache (
   status INTEGER NOT NULL,
   data BLOB NOT NULL
 );
+CREATE TABLE IF NOT EXISTS known_projects (
+  id TEXT PRIMARY KEY NOT NULL
+);
 `);
 
 const apiQueue = new RequestQueue({
@@ -235,9 +238,12 @@ const getAsset = (md5ext) => {
   });
 };
 
+const recordKnownProjects = db.prepare(`INSERT INTO known_projects (id) SELECT id FROM cache WHERE id LIKE 'projects/%' AND expires < ?;`);
 const deleteEntryStatement = db.prepare(`DELETE FROM cache WHERE expires < ?;`);
 const removeExpiredEntries = () => {
-  deleteEntryStatement.run(now());
+  const time = now();
+  recordKnownProjects.run(time);
+  deleteEntryStatement.run(time);
 };
 
 const removeEverything = () => {
