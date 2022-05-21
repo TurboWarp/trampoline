@@ -182,7 +182,7 @@ const getAvatar = async (userId) => {
   metrics.avatars++;
   const id = `avatars/${userId}`;
   return computeIfMissing(id, HOUR * 6, () => {
-    return imageQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/user/${userId}_32x32.png?v=`);
+    return imageQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/user/${userId}_90x90.png?v=`);
   });
 };
 
