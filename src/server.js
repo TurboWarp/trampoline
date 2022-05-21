@@ -66,7 +66,7 @@ const handleResponse = (res, dbPromise) => {
 
 app.get('/proxy/projects/:id', (req, res) => {
   res.type('application/json');
-  handleResponse(res, api.getProject(req.params.id));
+  handleResponse(res, api.getProjectMeta(req.params.id));
 });
 
 app.get('/proxy/users/:username', (req, res) => {

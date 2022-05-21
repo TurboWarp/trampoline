@@ -119,7 +119,7 @@ const computeIfMissing = async (id, expiration, compute, errorGenerator=defaultE
   }
 };
 
-const getProject = async (projectId) => {
+const getProjectMeta = async (projectId) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
   const id = `projects/${projectId}`;
   metrics.projects++;
@@ -245,7 +245,7 @@ const removeEverything = () => {
 };
 
 module.exports = {
-  getProject,
+  getProjectMeta,
   getUser,
   getStudioPage,
   getThumbnail,
