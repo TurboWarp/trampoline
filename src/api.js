@@ -61,7 +61,7 @@ const wrapError = (error) => {
 };
 
 const ongoingComputes = new Map();
-const combineSimultaneousComputes = (id, compute) => new Promise((resolve, reject) => {
+const combineSimultaneousComputes = (id, compute, handleError) => new Promise((resolve, reject) => {
   const callbacks = {
     resolve,
     reject
@@ -81,10 +81,11 @@ const combineSimultaneousComputes = (id, compute) => new Promise((resolve, rejec
         resolve(r);
       }
     })
-    .catch((r) => {
+    .catch((error) => {
+      const result = handleError(error);
       ongoingComputes.delete(id);
-      for (const {reject} of computeContext.callbacks) {
-        reject(r);
+      for (const {resolve} of computeContext.callbacks) {
+        resolve(result);
       }
     });
 });
@@ -95,7 +96,7 @@ const defaultErrorGenerator = (error) => ({
 
 const getStatement = db.prepare(`SELECT expires, status, data FROM cache WHERE id=?;`);
 const insertStatement = db.prepare(`INSERT INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) RETURNING expires, status, data;`);
-const computeIfMissing = async (id, expiration, compute, errorGenerator=defaultErrorGenerator) => {
+const computeIfMissing = (id, expiration, compute, errorGenerator=defaultErrorGenerator) => {
   const cached = getStatement.get(id);
   if (cached) {
     metrics.cacheHit++;
@@ -107,18 +108,16 @@ const computeIfMissing = async (id, expiration, compute, errorGenerator=defaultE
     }
     return now() + expiration;
   };
-  try {
-    return await combineSimultaneousComputes(id, async () => {
-      metrics.cacheMiss++;
-      const result = await compute();
-      return wrapDatabaseResponse(insertStatement.get(id, getExpiration(true), 200, result));
-    });
-  } catch (error) {
+  return combineSimultaneousComputes(id, async () => {
+    metrics.cacheMiss++;
+    const result = await compute();
+    return wrapDatabaseResponse(insertStatement.get(id, getExpiration(true), 200, result));
+  }, (error) => {
     logger.debug('' + ((error && error.stack) || error));
     const status = APIError.getStatus(error);
     const data = Buffer.from(JSON.stringify(errorGenerator(error)));
-    return wrapDatabaseResponse(insertStatement.get(id, getExpiration(false), status, data));
-  }
+    return wrapDatabaseResponse(insertStatement.get(id, getExpiration(false), status, data));  
+  });
 };
 
 const getProjectMeta = async (projectId) => {
