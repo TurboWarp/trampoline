@@ -35,7 +35,9 @@ const translateQueue = new RequestQueue({
   throttle: 100
 });
 
-const HOUR = 1000 * 60 * 60;
+const SECOND = 1000;
+const MINUTE = SECOND * 60;
+const HOUR = MINUTE * 60;
 
 const now = () => Date.now();
 
@@ -123,7 +125,8 @@ const getProjectMeta = async (projectId) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
   const id = `projects/${projectId}`;
   metrics.projects++;
-  return computeIfMissing(id, HOUR, () => {
+  return computeIfMissing(id, 4 * MINUTE, () => {
+    // TODO: we may have to send a cache buster to make sure we get a recent project token
     return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/`);
   });
 };
