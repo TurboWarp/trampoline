@@ -102,21 +102,21 @@ const computeIfMissing = (id, expiration, compute, errorGenerator=defaultErrorGe
     metrics.cacheHit++;
     return wrapDatabaseResponse(cached);
   }
-  const getExpiration = (success) => {
+  const getExpiration = (data) => {
     if (typeof expiration === 'function') {
-      return now() + expiration(success);
+      return expiration(data);
     }
     return now() + expiration;
   };
   return combineSimultaneousComputes(id, async () => {
     metrics.cacheMiss++;
     const result = await compute();
-    return wrapDatabaseResponse(insertStatement.get(id, getExpiration(true), 200, result));
+    return wrapDatabaseResponse(insertStatement.get(id, getExpiration(result), 200, result));
   }, (error) => {
     logger.debug('' + ((error && error.stack) || error));
     const status = APIError.getStatus(error);
     const data = Buffer.from(JSON.stringify(errorGenerator(error)));
-    return wrapDatabaseResponse(insertStatement.get(id, getExpiration(false), status, data));  
+    return wrapDatabaseResponse(insertStatement.get(id, getExpiration(null), status, data));  
   });
 };
 
@@ -211,11 +211,11 @@ const getTranslate = async (language, text) => {
     });
   }
   const id = `translate/${language}/${text}`;
-  return computeIfMissing(id, (success) => {
-    if (success) {
-      return HOUR * 24 * 30;
+  return computeIfMissing(id, (data) => {
+    if (data) {
+      return now() + HOUR * 24 * 30;
     }
-    return HOUR;
+    return now() + HOUR;
   }, () => {
     logger.info(`l10n: ${language} ${text}`);
     metrics.translateNew++;
