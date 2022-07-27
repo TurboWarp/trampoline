@@ -154,7 +154,7 @@ const getThumbnail = async (projectId) => {
   metrics.thumbnailRaw++;
   const id = `thumbnails/${projectId}`;
   return computeIfMissing(id, HOUR * 6, () => {
-    return imageQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png`);
+    return imageQueue.queuePromise(`https://uploads.scratch.mit.edu/projects/thumbnails/${projectId}.png`);
   });
 };
 
@@ -184,7 +184,7 @@ const getAvatar = async (userId) => {
   metrics.avatars++;
   const id = `avatars/${userId}`;
   return computeIfMissing(id, HOUR * 6, () => {
-    return imageQueue.queuePromise(`https://cdn2.scratch.mit.edu/get_image/user/${userId}_90x90.png?v=`);
+    return imageQueue.queuePromise(`https://uploads.scratch.mit.edu/users/avatars/${userId}.png`);
   });
 };
 
