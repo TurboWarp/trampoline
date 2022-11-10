@@ -125,6 +125,9 @@ const getProjectMeta = async (projectId) => {
   const id = `projects/${projectId}`;
   metrics.projects++;
   return computeIfMissing(id, (data) => {
+    if (!data) {
+      return 1000 * 60;
+    }
     const text = data.toString();
     const json = JSON.parse(text);
     const token = json.project_token;
