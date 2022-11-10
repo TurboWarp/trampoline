@@ -124,8 +124,15 @@ const getProjectMeta = async (projectId) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
   const id = `projects/${projectId}`;
   metrics.projects++;
-  return computeIfMissing(id, 4 * MINUTE, () => {
-    // TODO: we may have to send a cache buster to make sure we get a recent project token
+  return computeIfMissing(id, (data) => {
+    const text = data.toString();
+    const json = JSON.parse(text);
+    const token = json.project_token;
+    if (!token) return 0;
+    const unixTimestamp = +token.split('_')[0] * 1000;
+    if (!unixTimestamp) return 0;
+    return unixTimestamp - MINUTE * 1;
+  }, () => {
     return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/`);
   });
 };
