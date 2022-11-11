@@ -20,7 +20,7 @@ app.listen(port, function() {
 });
 
 api.removeExpiredEntries();
-const CLEANUP_INTERVAL = 1000 * 15;
+const CLEANUP_INTERVAL = 1000 * 3;
 setInterval(api.removeExpiredEntries, CLEANUP_INTERVAL);
 
 const METRICS_INTERVAL = 1000 * 60 * 60;
