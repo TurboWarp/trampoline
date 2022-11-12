@@ -126,7 +126,8 @@ const getProjectMeta = async (projectId) => {
   metrics.projects++;
   return computeIfMissing(id, (data) => {
     if (!data) {
-      return 1000 * 60;
+      // Project is unshared, invalid, etc.
+      return now() + MINUTE * 1;
     }
     const text = data.toString();
     const json = JSON.parse(text);
