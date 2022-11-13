@@ -37,7 +37,7 @@ const formatExpires = (unix) => {
   const until = Math.max(0, date.getTime() - now);
   return {
     expires: date.toUTCString(),
-    cacheControl: `public, max-age=${Math.round(until / 1000)}, immutable`
+    cacheControl: `public, max-age=${Math.round(until / 1000)}, immutable, must-revalidate`
   };
 };
 
