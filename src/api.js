@@ -135,9 +135,9 @@ const getProjectMeta = async (projectId) => {
     if (!token) return 0;
     const unixTimestamp = +token.split('_')[0] * 1000;
     if (!unixTimestamp) return 0;
-    return unixTimestamp - MINUTE * 1;
+    return unixTimestamp - MINUTE * 2;
   }, () => {
-    return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/`);
+    return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}?nocache=${Date.now()}`);
   });
 };
 
