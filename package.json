@@ -14,7 +14,7 @@
     "express": "^4.18.2",
     "node-fetch": "^2.6.7",
     "scratch-translate-extension-languages": "0.0.20191118205314",
-    "sharp": "^0.31.2",
+    "sharp": "^0.31.3",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^4.7.1"
   },
