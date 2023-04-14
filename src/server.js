@@ -64,26 +64,30 @@ const handleResponse = (res, dbPromise) => {
     });
 };
 
-app.get('/proxy/projects/:id', (req, res) => {
+const apiProxy = express.Router();
+apiProxy.get('/projects/:id', (req, res) => {
   res.type('application/json');
   handleResponse(res, api.getProjectMeta(req.params.id));
 });
 
-app.get('/proxy/users/:username', (req, res) => {
+apiProxy.get('/users/:username', (req, res) => {
   res.type('application/json');
   handleResponse(res, api.getUser(req.params.username));
 });
 
-app.get('/proxy/studios/:id/projects', (req, res) => {
+apiProxy.get('/studios/:id/projects', (req, res) => {
   const offset = req.query.get('offset') || '0';
   res.type('application/json');
   handleResponse(res, api.getStudioPage(req.params.id, offset));
 });
 
-app.get('/proxy/studios/:id/projectstemporary/:offset', (req, res) => {
+apiProxy.get('/studios/:id/projectstemporary/:offset', (req, res) => {
   res.type('application/json');
   handleResponse(res, api.getStudioPage(req.params.id, req.params.offset));
 });
+
+app.use('/api', apiProxy);
+app.use('/proxy', apiProxy);
 
 app.get('/thumbnails/:id', (req, res) => {
   const width = req.query.get('width') || '480';

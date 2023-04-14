@@ -11,6 +11,14 @@ beforeEach(() => {
 });
 
 test('project API', async () => {
+  const res = await request.get('/api/projects/104')
+    .expect('Content-Type', /json/)
+    .expect(200);
+  expect(res.body.id).toBe(104);
+  expect(metrics.projects).toBe(1);
+});
+
+test('project API (/proxy)', async () => {
   const res = await request.get('/proxy/projects/104')
     .expect('Content-Type', /json/)
     .expect(200);
@@ -19,6 +27,14 @@ test('project API', async () => {
 });
 
 test('user API', async () => {
+  const res = await request.get('/api/users/griffpatch')
+    .expect('Content-Type', /json/)
+    .expect(200);
+  expect(res.body.id).toBe(1882674);
+  expect(metrics.users).toBe(1);
+});
+
+test('user API (/proxy)', async () => {
   const res = await request.get('/proxy/users/griffpatch')
     .expect('Content-Type', /json/)
     .expect(200);
@@ -27,6 +43,19 @@ test('user API', async () => {
 });
 
 test('studio projectstemporary', async () => {
+  const firstPage = await request.get('/api/studios/15926401/projectstemporary/0')
+    .expect('Content-Type', /json/)
+    .expect(200);
+  expect(Array.isArray(firstPage.body)).toBe(true);
+  expect(firstPage.body.length > 10).toBe(true);
+  expect(metrics.studioPages).toBe(1);
+  const secondPage = await request.get('/api/studios/15926401/projectstemporary/1')
+    .expect(200);
+  expect(secondPage.body[0]).toEqual(firstPage.body[1]);
+  expect(metrics.studioPages).toBe(2);
+});
+
+test('studio projectstemporary (/proxy)', async () => {
   const firstPage = await request.get('/proxy/studios/15926401/projectstemporary/0')
     .expect('Content-Type', /json/)
     .expect(200);
@@ -40,6 +69,19 @@ test('studio projectstemporary', async () => {
 });
 
 test('studio projects', async () => {
+  const firstPage = await request.get('/api/studios/15926401/projects?offset=0')
+    .expect('Content-Type', /json/)
+    .expect(200);
+  expect(Array.isArray(firstPage.body)).toBe(true);
+  expect(firstPage.body.length > 10).toBe(true);
+  expect(metrics.studioPages).toBe(1);
+  const secondPage = await request.get('/api/studios/15926401/projects?offset=1')
+    .expect(200);
+  expect(secondPage.body[0]).toEqual(firstPage.body[1]);
+  expect(metrics.studioPages).toBe(2);
+});
+
+test('studio projects (/proxy)', async () => {
   const firstPage = await request.get('/proxy/studios/15926401/projects?offset=0')
     .expect('Content-Type', /json/)
     .expect(200);
