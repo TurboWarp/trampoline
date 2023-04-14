@@ -1,7 +1,6 @@
 /**
- * @fileoverview Utility script to probe a project API endpoint and extract information about the
- * timestamps in the project token like the embedded timestamps and whether or not the token
- * actually works.
+ * @fileoverview Utility script to poll project API endpoints and extract information about the
+ * project token such as the embedded timestamp and whether or not it actually works.
  */
 
 const http = require('http');
