@@ -163,7 +163,7 @@ test.skip('translate', async () => {
 });
 
 test.skip('translate', async () => {
-  const data = await request.get('/tts/synth?locale=en&gender=male&text=test')
+  const data = await request.get('/tts/synth?locale=en-US&gender=male&text=test')
     .expect('Content-Type', /audio/)
     .expect(200);
   expect(metrics.tts).toBe(1);

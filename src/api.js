@@ -7,6 +7,7 @@ const ScratchUtils = require('./lib/ScratchUtils');
 const logger = require('./logger');
 const resizeImage = require('./resize');
 const {metrics} = require('./metrics');
+const ttsLocales = require('./tts-locales');
 
 const VERSION = 1;
 // CACHE_DIRECTORY can be set by systemd
@@ -249,13 +250,10 @@ const getTranslate = async (language, text) => {
 };
 
 const getTTS = async (locale, gender, text) => {
-  if (typeof locale !== 'string') return wrapError(new APIError.BadRequest('Invalid locale'));
-  // The list of locales that will work for TTS is smaller, but this is good enough I think
-  if (!Object.prototype.hasOwnProperty.call(scratchTranslateExtensionLanguages, locale)) return wrapError(new APIError.BadRequest('Unknown locale'));
-
+  if (!ttsLocales.includes(locale)) return wrapError(new APIError.BadRequest('Unknown locale'));
   if (gender !== 'male' && gender !== 'female') return wrapError(new APIError.BadRequest('Invalid gender'));
-
   if (typeof text !== 'string') return wrapError(new APIError.BadRequest('Invalid text'));
+
   // Truncate the same as scratch-vm does
   text = text.substring(0, 128);
 
