@@ -238,7 +238,6 @@ const getTranslate = async (language, text) => {
     }
     return now() + HOUR;
   }, () => {
-    logger.info(`l10n: ${language} ${text}`);
     metrics.translateNew++;
     return translateQueue.queuePromise(`https://translate-service.scratch.mit.edu/translate?language=${language}&text=${encodeURIComponent(text)}`);
   }, (error) => {
