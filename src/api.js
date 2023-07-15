@@ -34,6 +34,9 @@ const imageQueue = new RequestQueue({
 const translateQueue = new RequestQueue({
   throttle: 100
 });
+const ttsQueue = new RequestQueue({
+  throttle: 100
+});
 
 const SECOND = 1000;
 const MINUTE = SECOND * 60;
@@ -246,6 +249,24 @@ const getTranslate = async (language, text) => {
   });
 };
 
+const getTTS = async (locale, gender, text) => {
+  if (typeof locale !== 'string') return wrapError(new APIError.BadRequest('Invalid locale'));
+  // The list of locales that will work for TTS is smaller, but this is good enough I think
+  if (!Object.prototype.hasOwnProperty.call(scratchTranslateExtensionLanguages, locale)) return wrapError(new APIError.BadRequest('Unknown locale'));
+
+  if (gender !== 'male' && gender !== 'female') return wrapError(new APIError.BadRequest('Invalid gender'));
+
+  if (typeof text !== 'string') return wrapError(new APIError.BadRequest('Invalid text'));
+  // Truncate the same as scratch-vm does
+  text = text.substring(0, 128);
+
+  metrics.tts++;
+  const id = `tts/${locale}/${gender}/${text}`;
+  return computeIfMissing(id, now() + HOUR * 24 * 7, () => {
+    return ttsQueue.queuePromise(`https://synthesis-service.scratch.mit.edu/synth?locale=${locale}&gender=${gender}&text=${encodeURIComponent(text)}`);
+  });
+};
+
 const getAsset = (md5ext) => {
   if (!ScratchUtils.isValidAssetMd5ext(md5ext)) return wrapError(new APIError.BadRequest('Invalid asset ID'));
   const id = `assets/${md5ext}`;
@@ -272,6 +293,7 @@ module.exports = {
   getResizedThumbnail,
   getAvatar,
   getTranslate,
+  getTTS,
   getAsset,
   removeExpiredEntries,
   removeEverything

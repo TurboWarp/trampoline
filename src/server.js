@@ -119,6 +119,14 @@ app.get('/translate/translate', rateLimit({ requests: 500 }), (req, res) => {
   handleResponse(res, api.getTranslate(language, text));
 });
 
+app.get('/tts/synth', (req, res) => {
+  const locale = req.query.get('locale');
+  const gender = req.query.get('gender');
+  const text = req.query.get('text');
+  res.type('audio/mpeg');
+  handleResponse(res, api.getTTS(locale, gender, text));
+});
+
 app.get('/cloud-proxy/*', (req, res) => {
   res.status(404);
   res.type('text/plain');
