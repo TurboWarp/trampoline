@@ -154,6 +154,15 @@ test.skip('avatars', async () => {
   expect(metrics.avatars).toBe(1);
 });
 
+test.skip('avatars', async () => {
+  await request.get('/avatars/by-username/TestMuffin')
+    .expect('Content-Type', 'image/png')
+    .expect(200)
+    .then((res) => expectImage(res, 'png', 60, 60));
+  expect(metrics.users).toBe(1);
+  expect(metrics.avatars).toBe(1);
+});
+
 test.skip('translate', async () => {
   const data = await request.get('/translate/translate?language=en&text=test')
     .expect('Content-Type', /json/)

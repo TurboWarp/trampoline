@@ -203,6 +203,21 @@ const getAvatar = async (userId) => {
   });
 };
 
+const getAvatarByUsername = async (username) => {
+  return getUser(username).then((data) => {
+    if (data.status !== 200) {
+      return data;
+    }
+    const json = JSON.parse(data.data.toString('utf-8'));
+    const thumbnailUrl = json.profile.images['90x90'];
+    const thumbnailMatch = thumbnailUrl.match(/(\d{2,})_/);
+    if (thumbnailMatch) {
+      return getAvatar(thumbnailMatch[1]);
+    }
+    return wrapError(new APIError.InternalError('Avatar information was not available'));
+  });
+};
+
 const isMeaninglessTranslation = (text) => (
   // Strings that are just numbers should not be translated. Scratch will always just return the
   // same number without translation.
@@ -289,6 +304,7 @@ module.exports = {
   getThumbnail,
   getResizedThumbnail,
   getAvatar,
+  getAvatarByUsername,
   getTranslate,
   getTTS,
   getAsset,

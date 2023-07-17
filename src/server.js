@@ -99,6 +99,11 @@ app.get('/thumbnails/:id', (req, res) => {
   handleResponse(res, api.getResizedThumbnail(req.params.id, +width, +height, format));
 });
 
+app.get('/avatars/by-username/:username', (req, res) => {
+  res.type('image/png');
+  handleResponse(res, api.getAvatarByUsername(req.params.username));
+});
+
 app.get('/avatars/:id', (req, res) => {
   res.type('image/png');
   handleResponse(res, api.getAvatar(req.params.id));
