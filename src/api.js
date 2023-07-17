@@ -259,7 +259,7 @@ const getTTS = async (locale, gender, text) => {
 
   metrics.tts++;
   const id = `tts/${locale}/${gender}/${text}`;
-  return computeIfMissing(id, now() + HOUR * 24 * 7, () => {
+  return computeIfMissing(id, HOUR * 24 * 7, () => {
     return ttsQueue.queuePromise(`https://synthesis-service.scratch.mit.edu/synth?locale=${locale}&gender=${gender}&text=${encodeURIComponent(text)}`);
   });
 };
