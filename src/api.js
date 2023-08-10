@@ -284,7 +284,7 @@ const getAsset = (md5ext) => {
   const id = `assets/${md5ext}`;
   metrics.assets++;
   return computeIfMissing(id, HOUR * 24, () => {
-    return apiQueue.queuePromise(`https://assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`);
+    return apiQueue.queuePromise(`https://scratch-assets.scratch.org/internalapi/asset/${md5ext}/get/`);
   });
 };
 
