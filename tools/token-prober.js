@@ -34,7 +34,7 @@ const run = async (url) => {
     const delta = (tokenTimestamp - now).toString().padStart(3, ' ');
     process.stdout.write(`${tokenTimestamp} - ${now} = ${delta}${delta < 0 ? ' !!! expired !!!' : ''} ... `);
 
-    const projectResponse = await fetch(`https://projects.scratch.mit.edu/${ID}?token=${token}`);
+    const projectResponse = await fetch(`https://scratch-projects.scratch.org/${ID}?token=${token}`);
     if (projectResponse.ok) {
       process.stdout.write(`OK\n`);
     } else {
