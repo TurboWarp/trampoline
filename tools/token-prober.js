@@ -9,7 +9,7 @@ const fetch = require('node-fetch').default;
 
 const ID = '10128407';
 
-const SCRATCH_API = 'https://api.scratch.mit.edu/projects/$id';
+const SCRATCH_API = 'https://scratch-api.scratch.org/projects/$id';
 const TRAMPOLINE_API = 'https://trampoline.turbowarp.org/proxy/projects/$id';
 const LOCALHOST_API = 'http://localhost:8080/proxy/projects/$id';
 
@@ -34,7 +34,7 @@ const run = async (url) => {
     const delta = (tokenTimestamp - now).toString().padStart(3, ' ');
     process.stdout.write(`${tokenTimestamp} - ${now} = ${delta}${delta < 0 ? ' !!! expired !!!' : ''} ... `);
 
-    const projectResponse = await fetch(`https://projects.scratch.mit.edu/${ID}?token=${token}`);
+    const projectResponse = await fetch(`https://scratch-projects.scratch.org/${ID}?token=${token}`);
     if (projectResponse.ok) {
       process.stdout.write(`OK\n`);
     } else {

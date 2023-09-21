@@ -141,7 +141,7 @@ const getProjectMeta = async (projectId) => {
     if (!unixTimestamp) return 0;
     return unixTimestamp - MINUTE * 2;
   }, () => {
-    return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}?nocache=${Date.now()}`);
+    return apiQueue.queuePromise(`https://scratch-api.scratch.org/projects/${projectId}?nocache=${Date.now()}`);
   });
 };
 
@@ -150,7 +150,7 @@ const getUser = async (username) => {
   const id = `users/${username}`;
   metrics.users++;
   return computeIfMissing(id, HOUR * 24, () => {
-    return apiQueue.queuePromise(`https://api.scratch.mit.edu/users/${username}/`);
+    return apiQueue.queuePromise(`https://scratch-api.scratch.org/users/${username}/`);
   });
 };
 
@@ -160,7 +160,7 @@ const getStudioPage = async (studioId, offset) => {
   const id = `studios/${studioId}/${offset}`;
   metrics.studioPages++;
   return computeIfMissing(id, HOUR * 6, () => {
-    return apiQueue.queuePromise(`https://api.scratch.mit.edu/studios/${studioId}/projects?offset=${offset}&limit=40`);
+    return apiQueue.queuePromise(`https://scratch-api.scratch.org/studios/${studioId}/projects?offset=${offset}&limit=40`);
   });
 };
 
@@ -284,7 +284,7 @@ const getAsset = (md5ext) => {
   const id = `assets/${md5ext}`;
   metrics.assets++;
   return computeIfMissing(id, HOUR * 24, () => {
-    return apiQueue.queuePromise(`https://assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`);
+    return apiQueue.queuePromise(`https://scratch-assets.scratch.org/internalapi/asset/${md5ext}/get/`);
   });
 };
 
