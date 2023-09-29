@@ -131,7 +131,7 @@ const getProjectMeta = async (projectId) => {
   return computeIfMissing(id, (data) => {
     if (!data) {
       // Project is unshared, invalid, etc.
-      return now() + MINUTE * 1;
+      return now() + MINUTE * 2;
     }
     const text = data.toString();
     const json = JSON.parse(text);
@@ -139,9 +139,13 @@ const getProjectMeta = async (projectId) => {
     if (!token) return 0;
     const unixTimestamp = +token.split('_')[0] * 1000;
     if (!unixTimestamp) return 0;
-    return unixTimestamp - MINUTE * 2;
+    // api.scratch.mit.edu has Cache-Control: max-age=240 and the tokens expire 300 seconds
+    // after being generated. Once this entry expires we want to maximize the chance that
+    // we get a brand new token, so wait a couple more seconds for the cache to hopefully be
+    // cleared.
+    return unixTimestamp - SECOND * 58;
   }, () => {
-    return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}?nocache=${Date.now()}`);
+    return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}`);
   });
 };
 
