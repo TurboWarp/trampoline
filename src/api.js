@@ -14,6 +14,7 @@ const VERSION = 1;
 const dbFolder = process.env.CACHE_DIRECTORY || path.join(__dirname, '..');
 const db = new sqlite3(path.join(dbFolder, `trampoline-${VERSION}.db`));
 db.pragma('journal_mode = WAL');
+db.pragma('secure_delete = true');
 db.exec(`
 CREATE TABLE IF NOT EXISTS cache (
   id TEXT PRIMARY KEY NOT NULL,
