@@ -17,6 +17,6 @@ jobs:
         npm ci
         # npm is an awful piece of software
         # https://github.com/npm/cli/issues/4828
-        npm install sharp
+        npm install --include=optional sharp
     - name: Run tests
       run: npm test
