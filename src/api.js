@@ -140,13 +140,12 @@ const getProjectMeta = async (projectId) => {
     if (!token) return 0;
     const unixTimestamp = +token.split('_')[0] * 1000;
     if (!unixTimestamp) return 0;
-    // api.scratch.mit.edu has Cache-Control: max-age=240 and the tokens expire 300 seconds
-    // after being generated. Once this entry expires we want to maximize the chance that
-    // we get a brand new token, so wait a couple more seconds for the cache to hopefully be
-    // cleared.
-    return unixTimestamp - SECOND * 58;
+    // api.scratch.mit.edu has Cache-Control: max-age=240 and the tokens have a timestamp
+    // that 300 seconds into the future. However that timestamp is consistently wrong,
+    // so we shouldn't wait for it to be close to expiry.
+    return unixTimestamp - SECOND * 118;
   }, () => {
-    return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}`);
+    return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/?`);
   });
 };
 
