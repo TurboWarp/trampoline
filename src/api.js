@@ -140,9 +140,9 @@ const getProjectMeta = async (projectId) => {
     if (!token) return 0;
     const unixTimestamp = +token.split('_')[0] * 1000;
     if (!unixTimestamp) return 0;
-    // api.scratch.mit.edu has Cache-Control: max-age=240 and the tokens have a timestamp
-    // that 300 seconds into the future. However that timestamp is consistently wrong,
-    // so we shouldn't wait for it to be close to expiry.
+    // api.scratch.mit.edu has Cache-Control: max-age=240 and the tokens have a timestamp set 300
+    // seconds into the future for uncached responses. However that timestamp is sometimes wrong for
+    // unkown reasons, so we shouldn't wait for it to be close to expiry.
     return unixTimestamp - SECOND * 120;
   }, () => {
     // Send along a slightly random query string so we're more likely to get an uncached token if
