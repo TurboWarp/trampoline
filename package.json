@@ -16,7 +16,7 @@
     "scratch-translate-extension-languages": "1.0.0",
     "sharp": "^0.33.2",
     "winston": "^3.13.0",
-    "winston-daily-rotate-file": "^4.7.1"
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",
