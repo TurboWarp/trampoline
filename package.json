@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "abort-controller": "^3.0.0",
-    "better-sqlite3": "^9.4.3",
+    "better-sqlite3": "^10.0.0",
     "express": "^4.19.2",
     "node-fetch": "^2.7.0",
     "scratch-translate-extension-languages": "1.0.0",
