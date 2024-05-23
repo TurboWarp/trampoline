@@ -82,7 +82,9 @@ class RequestQueue {
     })
       .then(async (res) => {
         switch (res.status) {
-          case 200: {
+          case 200:
+          // uploads.scratch.mit.edu is returning status 688 for users with the default avatar; just treat as success
+          case 688: { 
             const body = await res.buffer();
             callback(null, body);
             break;
