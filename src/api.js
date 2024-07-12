@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS cache (
   expires INTEGER NOT NULL,
   status INTEGER NOT NULL,
   data BLOB NOT NULL
-);
+) WITHOUT ROWID;
 `);
 
 const apiQueue = new RequestQueue({
