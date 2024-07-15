@@ -228,7 +228,7 @@ const getAvatarByUsername = async (username) => {
   });
 };
 
-const isMeaninglessTranslation = (text) => (
+const isMeaninglessTranslation = (language, text) => (
   // Strings that are just numbers should not be translated. Scratch will always just return the
   // same number without translation.
   (/\d/.test(text) && !isNaN(text)) ||
@@ -242,7 +242,9 @@ const isMeaninglessTranslation = (text) => (
   /^[a-zA-Z]{25}$/.test(text) ||
   /^[a-z0-9]{100}$/.test(text) ||
   /^Combo of \d{5,} Fruits!$/.test(text) ||
-  /^안녕-?\d{5,}$/.test(text)
+  /^안녕-?\d{5,}$/.test(text) ||
+  /^\d+\$$/.test(text) ||
+  (language === 'az' && /^[01][a-z]+$/i.test(text))
 );
 
 const getTranslate = async (language, text) => {
@@ -251,7 +253,7 @@ const getTranslate = async (language, text) => {
   if (typeof text !== 'string') return wrapError(new APIError.BadRequest('Invalid text'));
   const expires = HOUR * 24 * 90;
   metrics.translate++;
-  if (isMeaninglessTranslation(text)) {
+  if (isMeaninglessTranslation(language, text)) {
     metrics.translateMeaningless++;
     return wrapDatabaseResponse({
       status: 200,
