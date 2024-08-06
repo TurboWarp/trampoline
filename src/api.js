@@ -145,13 +145,7 @@ const getProjectMeta = async (projectId) => {
     // unkown reasons, so we shouldn't wait for it to be close to expiry.
     return unixTimestamp - SECOND * 120;
   }, () => {
-    // Send along a slightly random query string so we're more likely to get an uncached token if
-    // we just evicted an old cache entry.
-    // We're not going to send a traditional cachebuster like ?nocache=${Date.now()} because they've
-    // throttled those really bad in the past.
-    const ENDINGS = ['', '?', '/', '/?'];
-    const ending = ENDINGS[Math.floor(Math.random() * ENDINGS.length)];
-    return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}${ending}`);
+    return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/`);
   });
 };
 
