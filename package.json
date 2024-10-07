@@ -15,7 +15,7 @@
     "node-fetch": "^2.7.0",
     "scratch-translate-extension-languages": "1.0.7",
     "sharp": "^0.33.5",
-    "winston": "^3.14.2",
+    "winston": "^3.15.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
