@@ -9,10 +9,8 @@
   "author": "Thomas Weber",
   "license": "MIT",
   "dependencies": {
-    "abort-controller": "^3.0.0",
     "better-sqlite3": "^11.8.0",
     "express": "^4.21.2",
-    "node-fetch": "^2.7.0",
     "scratch-translate-extension-languages": "1.0.7",
     "sharp": "^0.33.5",
     "winston": "^3.17.0",

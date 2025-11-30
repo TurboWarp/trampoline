@@ -1,6 +1,3 @@
-const https = require('https');
-const fetch = require('node-fetch').default;
-const AbortController = require('abort-controller').AbortController;
 const logger = require('../logger');
 const APIError = require('./APIError');
 
@@ -85,8 +82,8 @@ class RequestQueue {
           case 200:
           // uploads.scratch.mit.edu is returning status 688 for users with the default avatar; just treat as success
           case 688: { 
-            const body = await res.buffer();
-            callback(null, body);
+            const arrayBuffer = await res.arrayBuffer();
+            callback(null, Buffer.from(arrayBuffer));
             break;
           }
           case 404: callback(new APIError.NotFound('Resource does not exist'), null); break;
@@ -106,10 +103,10 @@ class RequestQueue {
 
   getRequestOptions() {
     return {
+      keepalive: true,
       headers: {
         'User-Agent': 'https://github.com/TurboWarp/trampoline'
       },
-      agent: RequestQueue.requestAgent,
     };
   }
 
@@ -165,7 +162,5 @@ class RequestQueue {
     });
   }
 }
-
-RequestQueue.requestAgent = new https.Agent({ keepAlive: true });
 
 module.exports = RequestQueue;
