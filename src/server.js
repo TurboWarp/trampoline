@@ -132,13 +132,13 @@ app.get('/tts/synth', (req, res) => {
   handleResponse(res, api.getTTS(locale, gender, text));
 });
 
-app.get('/cloud-proxy/*', (req, res) => {
+app.get('/cloud-proxy/*splat', (req, res) => {
   res.status(404);
   res.type('text/plain');
   res.send('cloud proxy has been removed');
 });
 
-app.get('/site-proxy/*', (req, res) => {
+app.get('/site-proxy/*splat', (req, res) => {
   res.status(404);
   res.type('text/plain');
   res.send('site proxy has been removed');
