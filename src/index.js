@@ -6,7 +6,11 @@ const config = require('./config');
 const metrics = require('./metrics');
 
 const port = config.APP.port;
-app.listen(port, function() {
+app.listen(port, (err) => {
+  if (err) {
+    throw err;
+  }
+
   // Update permissions of unix sockets
   if (typeof port === 'string' && port.startsWith('/') && config.APP.unixSocketPermissions >= 0) {
     fs.chmod(port, config.APP.unixSocketPermissions, function(err) {
@@ -16,6 +20,7 @@ app.listen(port, function() {
       }
     });
   }
+
   logger.info('Started on port: %s', port);
 });
 
