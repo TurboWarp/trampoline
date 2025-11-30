@@ -17,8 +17,8 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
-    "jest": "^29.7.0",
-    "supertest": "^7.0.0"
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
   },
   "private": true
 }
