@@ -104,7 +104,7 @@ const expectImage = (res, format, width, height) => {
     });
 };
 
-test.skip('thumbnails', async () => {
+test('thumbnails', async () => {
   await request.get('/thumbnails/1')
     .expect('Content-Type', 'image/jpeg')
     .expect(200)
@@ -146,15 +146,15 @@ test.skip('thumbnails', async () => {
   expect(metrics.thumbnails).toBe(6);
 });
 
-test.skip('avatars', async () => {
+test('avatars', async () => {
   await request.get('/avatars/139')
     .expect('Content-Type', 'image/png')
     .expect(200)
-    .then((res) => expectImage(res, 'png', 32, 32));
+    .then((res) => expectImage(res, 'png', 60, 60));
   expect(metrics.avatars).toBe(1);
 });
 
-test.skip('avatars', async () => {
+test('avatars', async () => {
   await request.get('/avatars/by-username/TestMuffin')
     .expect('Content-Type', 'image/png')
     .expect(200)
@@ -163,7 +163,7 @@ test.skip('avatars', async () => {
   expect(metrics.avatars).toBe(1);
 });
 
-test.skip('translate', async () => {
+test('translate', async () => {
   const data = await request.get('/translate/translate?language=en&text=test')
     .expect('Content-Type', /json/)
     .expect(200);
@@ -171,7 +171,7 @@ test.skip('translate', async () => {
   expect(metrics.translate).toBe(1);
 });
 
-test.skip('translate', async () => {
+test('tts', async () => {
   const data = await request.get('/tts/synth?locale=en-US&gender=male&text=test')
     .expect('Content-Type', /audio/)
     .expect(200);
