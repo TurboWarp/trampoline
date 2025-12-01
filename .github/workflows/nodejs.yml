@@ -7,17 +7,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         persist-credentials: false
     - name: Install Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
-        node-version: 22
+        node-version: 24
     - name: Install dependencies
-      # --build-from-source is used to work around npm being an awful piece of software
-      # https://github.com/npm/cli/issues/4828
-      # https://sharp.pixelplumbing.com/install#building-from-source
-      run: npm install --build-from-source
+      run: npm ci
     - name: Run tests
       run: npm test
