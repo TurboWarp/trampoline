@@ -70,7 +70,7 @@ apiProxy.get('/projects/:id', rateLimit({ name: 'projects', requests: 10 }), (re
   handleResponse(res, api.getProjectMeta(req.params.id));
 });
 
-apiProxy.get('/users/:username', rateLimit({ name: 'users', requests: 10 }), (req, res) => {
+apiProxy.get('/users/:username', rateLimit({ name: 'users', requests: 2 }), (req, res) => {
   res.type('application/json');
   handleResponse(res, api.getUser(req.params.username));
 });
@@ -94,12 +94,12 @@ app.get('/thumbnails/:id', (req, res) => {
   handleResponse(res, api.getResizedThumbnail(req.params.id, +width, +height, format));
 });
 
-app.get('/avatars/by-username/:username', (req, res) => {
+app.get('/avatars/by-username/:username', rateLimit({ name: 'avatars-by-username', requests: 10 }), (req, res) => {
   res.type('image/png');
   handleResponse(res, api.getAvatarByUsername(req.params.username));
 });
 
-app.get('/avatars/:id', (req, res) => {
+app.get('/avatars/:id', rateLimit({ name: 'avatars-by-id', requests: 10 }), (req, res) => {
   res.type('image/png');
   handleResponse(res, api.getAvatar(req.params.id));
 });
@@ -119,13 +119,13 @@ app.get('/translate/translate', rateLimit({ name: 'translate', requests: 500 }),
   handleResponse(res, api.getTranslate(language, text));
 });
 
-app.get('/tts/synth', (req, res) => {
-  const locale = req.query.get('locale');
-  const gender = req.query.get('gender');
-  const text = req.query.get('text');
-  res.type('audio/mpeg');
-  handleResponse(res, api.getTTS(locale, gender, text));
-});
+// app.get('/tts/synth', (req, res) => {
+//   const locale = req.query.get('locale');
+//   const gender = req.query.get('gender');
+//   const text = req.query.get('text');
+//   res.type('audio/mpeg');
+//   handleResponse(res, api.getTTS(locale, gender, text));
+// });
 
 app.get('/cloud-proxy/{*_}', (req, res) => {
   res.status(404);
