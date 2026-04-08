@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS cache (
 
 const apiQueue = new RequestQueue({
   // Scratch suggests no more than 10 req/sec
-  throttle: 100
+  throttle: 500
 });
 const imageQueue = new RequestQueue({
   // This queue only makes requests to cdn2.scratch.mit.edu
@@ -132,7 +132,7 @@ const getProjectMeta = async (projectId) => {
   return computeIfMissing(id, (data) => {
     if (!data) {
       // Project is unshared, invalid, etc.
-      return now() + MINUTE * 2;
+      return now() + MINUTE * 30;
     }
     const text = data.toString();
     const json = JSON.parse(text);
@@ -140,10 +140,7 @@ const getProjectMeta = async (projectId) => {
     if (!token) return 0;
     const unixTimestamp = +token.split('_')[0] * 1000;
     if (!unixTimestamp) return 0;
-    // api.scratch.mit.edu has Cache-Control: max-age=240 and the tokens have a timestamp set 300
-    // seconds into the future for uncached responses. However that timestamp is sometimes wrong for
-    // unkown reasons, so we shouldn't wait for it to be close to expiry.
-    return unixTimestamp - SECOND * 120;
+    return unixTimestamp - SECOND * 5;
   }, () => {
     return apiQueue.queuePromise(`https://api.scratch.mit.edu/projects/${projectId}/`);
   });

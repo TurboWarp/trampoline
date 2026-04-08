@@ -2,6 +2,7 @@ const logger = require('./logger');
 const {isTest} = require('./environment');
 
 module.exports = ({
+  name,
   requests
 }) => {
   const memory = new Map();
@@ -18,8 +19,7 @@ module.exports = ({
     if (current >= requests) {
       req.rateLimited = true;
       if (current === requests) {
-        // for debugging purposes
-        logger.warn('rate limit exceeded');
+        logger.warn(`rate limit ${name} exceeded`);
       }
     }
     memory.set(ip, current + 1);

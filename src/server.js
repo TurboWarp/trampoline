@@ -65,25 +65,20 @@ const handleResponse = (res, dbPromise) => {
 };
 
 const apiProxy = express.Router();
-apiProxy.get('/projects/:id', (req, res) => {
+apiProxy.get('/projects/:id', rateLimit({ name: 'projects', requests: 10 }), (req, res) => {
   res.type('application/json');
   handleResponse(res, api.getProjectMeta(req.params.id));
 });
 
-apiProxy.get('/users/:username', (req, res) => {
+apiProxy.get('/users/:username', rateLimit({ name: 'users', requests: 10 }), (req, res) => {
   res.type('application/json');
   handleResponse(res, api.getUser(req.params.username));
 });
 
-apiProxy.get('/studios/:id/projects', (req, res) => {
+apiProxy.get('/studios/:id/projects', rateLimit({ name: 'studios', requests: 10 }), (req, res) => {
   const offset = req.query.get('offset') || '0';
   res.type('application/json');
   handleResponse(res, api.getStudioPage(req.params.id, offset));
-});
-
-apiProxy.get('/studios/:id/projectstemporary/:offset', (req, res) => {
-  res.type('application/json');
-  handleResponse(res, api.getStudioPage(req.params.id, req.params.offset));
 });
 
 app.use('/api', apiProxy);
@@ -109,7 +104,7 @@ app.get('/avatars/:id', (req, res) => {
   handleResponse(res, api.getAvatar(req.params.id));
 });
 
-app.get('/translate/translate', rateLimit({ requests: 500 }), (req, res) => {
+app.get('/translate/translate', rateLimit({ name: 'translate', requests: 500 }), (req, res) => {
   const language = req.query.get('language');
   const text = req.query.get('text');
   res.type('application/json');
