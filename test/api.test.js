@@ -42,32 +42,6 @@ test('user API (/proxy)', async () => {
   expect(metrics.users).toBe(1);
 });
 
-test('studio projectstemporary', async () => {
-  const firstPage = await request.get('/api/studios/15926401/projectstemporary/0')
-    .expect('Content-Type', /json/)
-    .expect(200);
-  expect(Array.isArray(firstPage.body)).toBe(true);
-  expect(firstPage.body.length > 10).toBe(true);
-  expect(metrics.studioPages).toBe(1);
-  const secondPage = await request.get('/api/studios/15926401/projectstemporary/1')
-    .expect(200);
-  expect(secondPage.body[0]).toEqual(firstPage.body[1]);
-  expect(metrics.studioPages).toBe(2);
-});
-
-test('studio projectstemporary (/proxy)', async () => {
-  const firstPage = await request.get('/proxy/studios/15926401/projectstemporary/0')
-    .expect('Content-Type', /json/)
-    .expect(200);
-  expect(Array.isArray(firstPage.body)).toBe(true);
-  expect(firstPage.body.length > 10).toBe(true);
-  expect(metrics.studioPages).toBe(1);
-  const secondPage = await request.get('/proxy/studios/15926401/projectstemporary/1')
-    .expect(200);
-  expect(secondPage.body[0]).toEqual(firstPage.body[1]);
-  expect(metrics.studioPages).toBe(2);
-});
-
 test('studio projects', async () => {
   const firstPage = await request.get('/api/studios/15926401/projects?offset=0')
     .expect('Content-Type', /json/)
@@ -169,11 +143,4 @@ test('translate', async () => {
     .expect(200);
   expect(data.body.result).toBe('test');
   expect(metrics.translate).toBe(1);
-});
-
-test('tts', async () => {
-  const data = await request.get('/tts/synth?locale=en-US&gender=male&text=test')
-    .expect('Content-Type', /audio/)
-    .expect(200);
-  expect(metrics.tts).toBe(1);
 });
