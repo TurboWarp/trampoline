@@ -9,8 +9,11 @@ const config = require('./config');
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
 app.set('x-powered-by', false);
-app.set('trust proxy', 'loopback');
 app.set('query parser', (q) => new URLSearchParams(q));
+
+// Using trust proxy is not a security issue. Our nginx configuration reliably sets XFF to the address
+// that makes sense for the context. We also use unix sockets so loopback mode is not usable.
+app.set('trust proxy', 1);
 
 app.use((req, res, next) => {
   res.header('X-Frame-Options', 'DENY');
