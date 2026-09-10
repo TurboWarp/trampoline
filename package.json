@@ -9,7 +9,7 @@
   "author": "Thomas Weber",
   "license": "MIT",
   "dependencies": {
-    "better-sqlite3": "^12.6.2",
+    "better-sqlite3": "^13.0.3",
     "express": "^5.2.1",
     "scratch-translate-extension-languages": "1.0.7",
     "sharp": "^0.35.4",
