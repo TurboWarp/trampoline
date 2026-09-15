@@ -4,6 +4,7 @@ const scratchTranslateExtensionLanguages = require('scratch-translate-extension-
 const APIError = require('./lib/APIError');
 const RequestQueue = require('./lib/RequestQueue');
 const ScratchUtils = require('./lib/ScratchUtils');
+const takedowns = require('./takedowns');
 const logger = require('./logger');
 const resizeImage = require('./resize');
 const {metrics} = require('./metrics');
@@ -125,8 +126,22 @@ const computeIfMissing = (id, expiration, compute, errorGenerator=defaultErrorGe
   });
 };
 
+const checkTakedown = (projectId) => {
+  const takedown = takedowns.get(projectId);
+  if (!takedown) return null;
+  return {
+    status: 451,
+    data: Buffer.from(JSON.stringify({
+      error: 'This project is unavailable for legal reasons',
+      url: takedown.url
+    }))
+  };
+};
+
 const getProjectMeta = async (projectId) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
+  const takedown = checkTakedown(projectId);
+  if (takedown) return takedown;
   const id = `projects/${projectId}`;
   metrics.projects++;
   return computeIfMissing(id, (data) => {
@@ -182,6 +197,8 @@ const getResizedThumbnail = async (projectId, width, height, format) => {
   if (typeof height !== 'number' || height > 360 || height <= 0 || !Number.isFinite(height) || Math.floor(height) !== height) {
     return wrapError(new APIError.BadRequest('Height is invalid'));
   }
+  const takedown = checkTakedown(projectId);
+  if (takedown) return takedown;
   metrics.thumbnails++;
   const id = `thumbnails/${projectId}/${width}/${height}/${format}`;
   return computeIfMissing(id, HOUR * 3, () => {
