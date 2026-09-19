@@ -1,5 +1,6 @@
 const logger = require('./logger');
 const {isTest} = require('./environment');
+const metrics = require('./metrics');
 
 module.exports = ({
   name,
@@ -18,6 +19,7 @@ module.exports = ({
     const current = memory.get(ip) || 0;
     if (current >= requests) {
       req.rateLimited = true;
+      metrics.rateLimited.inc({name});
       if (current === requests) {
         logger.warn(`rate limit ${name} exceeded`);
       }

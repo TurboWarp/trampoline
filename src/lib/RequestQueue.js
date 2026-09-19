@@ -1,8 +1,10 @@
 const logger = require('../logger');
 const APIError = require('./APIError');
+const metrics = require('../metrics');
 
 /**
  * @typedef RequestQueueOptions
+ * @property {string} [name]
  * @property {number} [throttle]
  * @property {number} [maxBacklog]
  * @property {number} [timeout]
@@ -17,6 +19,7 @@ const APIError = require('./APIError');
  * @property {string} url
  * @property {any} options
  * @property {RequestCallback} callback
+ * @property {number} queuedAt
  */
 
 /**
@@ -39,6 +42,16 @@ class RequestQueue {
     this.maxBacklog = 'maxBacklog' in options ? options.maxBacklog : 100;
     /** Request timeout. */
     this.timeout = 'timeout' in options ? options.timeout : 30000;
+    /** Name used in metrics. */
+    this.name = 'name' in options ? options.name : 'unnamed';
+
+    // Start metrics at 0 instead of blank
+    metrics.queueBacklog.set({
+      queue: this.name
+    }, 0);
+    metrics.queueRejected.inc({
+      queue: this.name
+    }, 0);
   }
 
   now() {
@@ -65,7 +78,13 @@ class RequestQueue {
     if (this.backlogEmpty()) {
       throw new APIError.InternalError('Cannot process next request: nothing in queue');
     }
-    const { url, callback, options } = this.backlog.shift();
+    const { url, callback, options, queuedAt } = this.backlog.shift();
+    metrics.queueBacklog.dec({
+      queue: this.name
+    });
+    metrics.queueWait.observe({
+      queue: this.name
+    }, (this.now() - queuedAt) / 1000);
 
     const abortController = new AbortController();
     const timeout = setTimeout(() => {
@@ -73,11 +92,17 @@ class RequestQueue {
     }, this.timeout);
 
     this.lastRequest = this.now();
+    const endUpstreamTimer = metrics.upstreamDuration.startTimer({
+      queue: this.name
+    });
     fetch(url, {
       ...this.getRequestOptions(),
       signal: abortController.signal
     })
       .then(async (res) => {
+        endUpstreamTimer({
+          status: res.status
+        });
         switch (res.status) {
           case 200:
           // uploads.scratch.mit.edu is returning status 688 for users with the default avatar; just treat as success
@@ -93,6 +118,9 @@ class RequestQueue {
         logger.debug('RequestQueue: processed request: ms %d status %d next %d', this.timeSinceLastRequest(), res.status, this.timeUntilNextRequest());
       })
       .catch((err) => {
+        endUpstreamTimer({
+          status: 'error'
+        });
         callback(new APIError.InternalError(err.code + ': ' + err.message), null);
       })
       .finally(() => {
@@ -136,10 +164,16 @@ class RequestQueue {
   queue(url, options, callback) {
     logger.debug('RequestQueue: queue url %s backlog size %d', url, this.backlog.length);
     if (this.backlogFilled()) {
+      metrics.queueRejected.inc({
+        queue: this.name
+      });
       callback(new APIError.TooManyRequests('Request backlog is filled.'), null);
       return;
     }
-    this.backlog.push({ url: url, options: options, callback: callback });
+    this.backlog.push({ url: url, options: options, callback: callback, queuedAt: this.now() });
+    metrics.queueBacklog.inc({
+      queue: this.name
+    });
     if (!this.processing) {
       this.beginProcessingRequests();
     }

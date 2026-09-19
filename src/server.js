@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('./logger');
 const api = require('./api');
 const rateLimit = require('./rate-limit');
+const metrics = require('./metrics');
 
 const app = express();
 const config = require('./config');
@@ -15,6 +16,8 @@ app.set('query parser', (q) => new URLSearchParams(q));
 // that makes sense for the context. We also use unix sockets so loopback mode is not usable.
 app.set('trust proxy', 1);
 
+app.use(metrics.middleware);
+
 app.use((req, res, next) => {
   res.header('X-Frame-Options', 'DENY');
   res.header('X-Content-Type-Options', 'nosniff');
@@ -24,7 +27,11 @@ app.use((req, res, next) => {
 });
 
 const STATIC_ROOT = 'static';
-app.use(express.static(STATIC_ROOT));
+app.use(express.static(STATIC_ROOT, {
+  setHeaders: (res) => {
+    res.req.metricsRoute = 'static';
+  }
+}));
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', config.APP.allowOrigins);

@@ -3,10 +3,18 @@ const app = require('../src/server');
 const sharp = require('sharp');
 const request = supertest(app);
 const {removeEverything} = require('../src/api');
-const {metrics, reset: resetMetrics} = require('../src/metrics');
+const client = require('@prometheus-io/client');
+const metrics = require('../src/metrics');
+
+const cacheLookups = async (type) => {
+  const {values} = await metrics.cacheLookups.get();
+  return values
+    .filter((i) => i.labels.type === type)
+    .reduce((sum, i) => sum + i.value, 0);
+};
 
 beforeEach(() => {
-  resetMetrics();
+  client.register.resetMetrics();
   removeEverything();
 });
 
@@ -15,7 +23,7 @@ test('project API', async () => {
     .expect('Content-Type', /json/)
     .expect(200);
   expect(res.body.id).toBe(104);
-  expect(metrics.projects).toBe(1);
+  expect(await cacheLookups('projects')).toBe(1);
 });
 
 test('project API (/proxy)', async () => {
@@ -23,7 +31,7 @@ test('project API (/proxy)', async () => {
     .expect('Content-Type', /json/)
     .expect(200);
   expect(res.body.id).toBe(104);
-  expect(metrics.projects).toBe(1);
+  expect(await cacheLookups('projects')).toBe(1);
 });
 
 test('user API', async () => {
@@ -31,7 +39,7 @@ test('user API', async () => {
     .expect('Content-Type', /json/)
     .expect(200);
   expect(res.body.id).toBe(1882674);
-  expect(metrics.users).toBe(1);
+  expect(await cacheLookups('users')).toBe(1);
 });
 
 test('user API (/proxy)', async () => {
@@ -39,7 +47,7 @@ test('user API (/proxy)', async () => {
     .expect('Content-Type', /json/)
     .expect(200);
   expect(res.body.id).toBe(1882674);
-  expect(metrics.users).toBe(1);
+  expect(await cacheLookups('users')).toBe(1);
 });
 
 test('studio projects', async () => {
@@ -48,11 +56,11 @@ test('studio projects', async () => {
     .expect(200);
   expect(Array.isArray(firstPage.body)).toBe(true);
   expect(firstPage.body.length > 10).toBe(true);
-  expect(metrics.studioPages).toBe(1);
+  expect(await cacheLookups('studio_pages')).toBe(1);
   const secondPage = await request.get('/api/studios/15926401/projects?offset=1')
     .expect(200);
   expect(secondPage.body[0]).toEqual(firstPage.body[1]);
-  expect(metrics.studioPages).toBe(2);
+  expect(await cacheLookups('studio_pages')).toBe(2);
 });
 
 test('studio projects (/proxy)', async () => {
@@ -61,11 +69,11 @@ test('studio projects (/proxy)', async () => {
     .expect(200);
   expect(Array.isArray(firstPage.body)).toBe(true);
   expect(firstPage.body.length > 10).toBe(true);
-  expect(metrics.studioPages).toBe(1);
+  expect(await cacheLookups('studio_pages')).toBe(1);
   const secondPage = await request.get('/proxy/studios/15926401/projects?offset=1')
     .expect(200);
   expect(secondPage.body[0]).toEqual(firstPage.body[1]);
-  expect(metrics.studioPages).toBe(2);
+  expect(await cacheLookups('studio_pages')).toBe(2);
 });
 
 const expectImage = (res, format, width, height) => {
@@ -117,7 +125,7 @@ test('thumbnails', async () => {
   await request.get('/thumbnails/1?width=240')
     .expect(200)
     .then((res) => expectImage(res, 'jpeg', 240, 360));
-  expect(metrics.thumbnails).toBe(6);
+  expect(await cacheLookups('thumbnails')).toBe(6);
 });
 
 test('avatars', async () => {
@@ -125,7 +133,7 @@ test('avatars', async () => {
     .expect('Content-Type', 'image/png')
     .expect(200)
     .then((res) => expectImage(res, 'png', 60, 60));
-  expect(metrics.avatars).toBe(1);
+  expect(await cacheLookups('avatars')).toBe(1);
 });
 
 test('avatars', async () => {
@@ -133,8 +141,8 @@ test('avatars', async () => {
     .expect('Content-Type', 'image/png')
     .expect(200)
     .then((res) => expectImage(res, 'png', 60, 60));
-  expect(metrics.users).toBe(1);
-  expect(metrics.avatars).toBe(1);
+  expect(await cacheLookups('users')).toBe(1);
+  expect(await cacheLookups('avatars')).toBe(1);
 });
 
 test('translate', async () => {
@@ -142,5 +150,5 @@ test('translate', async () => {
     .expect('Content-Type', /json/)
     .expect(200);
   expect(data.body.result).toBe('test');
-  expect(metrics.translate).toBe(1);
+  expect(await cacheLookups('translate')).toBe(1);
 });

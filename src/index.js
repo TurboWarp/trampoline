@@ -28,8 +28,4 @@ api.removeExpiredEntries();
 const CLEANUP_INTERVAL = 1000 * 3;
 setInterval(api.removeExpiredEntries, CLEANUP_INTERVAL);
 
-const METRICS_INTERVAL = 1000 * 60 * 60;
-setInterval(() => {
-  metrics.print();
-  metrics.reset();
-}, METRICS_INTERVAL);
+metrics.listen();

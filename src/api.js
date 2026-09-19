@@ -7,7 +7,7 @@ const ScratchUtils = require('./lib/ScratchUtils');
 const takedowns = require('./takedowns');
 const logger = require('./logger');
 const resizeImage = require('./resize');
-const {metrics} = require('./metrics');
+const metrics = require('./metrics');
 const ttsLocales = require('./tts-locales');
 
 const VERSION = 1;
@@ -26,18 +26,22 @@ CREATE TABLE IF NOT EXISTS cache (
 `);
 
 const apiQueue = new RequestQueue({
+  name: 'api',
   // Scratch suggests no more than 10 req/sec
   throttle: 500
 });
 const imageQueue = new RequestQueue({
+  name: 'image',
   // This queue only makes requests to cdn2.scratch.mit.edu
   // Loading a studio page in a browser will cause >40 requests to there, so clearly we can be a bit more aggressive.
   throttle: 50
 });
 const translateQueue = new RequestQueue({
+  name: 'translate',
   throttle: 100
 });
 const ttsQueue = new RequestQueue({
+  name: 'tts',
   throttle: 100
 });
 
@@ -102,12 +106,19 @@ const defaultErrorGenerator = (error) => ({
 
 const getStatement = db.prepare(`SELECT expires, status, data FROM cache WHERE id=?;`);
 const insertStatement = db.prepare(`INSERT INTO cache (id, expires, status, data) VALUES (?, ?, ?, ?) RETURNING expires, status, data;`);
-const computeIfMissing = (id, expiration, compute, errorGenerator=defaultErrorGenerator) => {
+const computeIfMissing = (type, id, expiration, compute, errorGenerator=defaultErrorGenerator) => {
   const cached = getStatement.get(id);
   if (cached) {
-    metrics.cacheHit++;
+    metrics.cacheLookups.inc({
+      type,
+      result: 'hit'
+    });
     return wrapDatabaseResponse(cached);
   }
+  metrics.cacheLookups.inc({
+    type,
+    result: 'miss'
+  });
   const getExpiration = (data) => {
     if (typeof expiration === 'function') {
       return expiration(data);
@@ -115,7 +126,6 @@ const computeIfMissing = (id, expiration, compute, errorGenerator=defaultErrorGe
     return now() + expiration;
   };
   return combineSimultaneousComputes(id, async () => {
-    metrics.cacheMiss++;
     const result = await compute();
     return wrapDatabaseResponse(insertStatement.get(id, getExpiration(result), 200, result));
   }, (error) => {
@@ -143,8 +153,7 @@ const getProjectMeta = async (projectId) => {
   const takedown = checkTakedown(projectId);
   if (takedown) return takedown;
   const id = `projects/${projectId}`;
-  metrics.projects++;
-  return computeIfMissing(id, (data) => {
+  return computeIfMissing('projects', id, (data) => {
     if (!data) {
       // Project is unshared, invalid, etc.
       return now() + MINUTE * 30;
@@ -164,8 +173,7 @@ const getProjectMeta = async (projectId) => {
 const getUser = async (username) => {
   if (!ScratchUtils.isValidUsername(username)) return wrapError(new APIError.BadRequest('Invalid username'));
   const id = `users/${username}`;
-  metrics.users++;
-  return computeIfMissing(id, HOUR * 24, () => {
+  return computeIfMissing('users', id, HOUR * 24, () => {
     return apiQueue.queuePromise(`https://api.scratch.mit.edu/users/${username}/`);
   });
 };
@@ -174,17 +182,15 @@ const getStudioPage = async (studioId, offset) => {
   if (!ScratchUtils.isValidIdentifier(studioId)) return wrapError(new APIError.BadRequest('Invalid studio ID'));
   if (!ScratchUtils.isValidOffset(offset)) return wrapError(new APIError.BadRequest('Invalid offset'));
   const id = `studios/${studioId}/${offset}`;
-  metrics.studioPages++;
-  return computeIfMissing(id, HOUR * 6, () => {
+  return computeIfMissing('studio_pages', id, HOUR * 6, () => {
     return apiQueue.queuePromise(`https://api.scratch.mit.edu/studios/${studioId}/projects?offset=${offset}&limit=40`);
   });
 };
 
 const getThumbnail = async (projectId) => {
   if (!ScratchUtils.isValidIdentifier(projectId)) return wrapError(new APIError.BadRequest('Invalid project ID'));
-  metrics.thumbnailRaw++;
   const id = `thumbnails/${projectId}`;
-  return computeIfMissing(id, HOUR * 6, () => {
+  return computeIfMissing('thumbnail_raw', id, HOUR * 6, () => {
     return imageQueue.queuePromise(`https://uploads.scratch.mit.edu/projects/thumbnails/${projectId}.png`);
   });
 };
@@ -199,9 +205,8 @@ const getResizedThumbnail = async (projectId, width, height, format) => {
   }
   const takedown = checkTakedown(projectId);
   if (takedown) return takedown;
-  metrics.thumbnails++;
   const id = `thumbnails/${projectId}/${width}/${height}/${format}`;
-  return computeIfMissing(id, HOUR * 3, () => {
+  return computeIfMissing('thumbnails', id, HOUR * 3, () => {
     return getThumbnail(projectId)
       .then((result) => {
         if (result.status !== 200) {
@@ -214,9 +219,8 @@ const getResizedThumbnail = async (projectId, width, height, format) => {
 
 const getAvatar = async (userId) => {
   if (!ScratchUtils.isValidIdentifier(userId)) return wrapError(new APIError.BadRequest('Invalid user ID'));
-  metrics.avatars++;
   const id = `avatars/${userId}`;
-  return computeIfMissing(id, HOUR * 6, () => {
+  return computeIfMissing('avatars', id, HOUR * 6, () => {
     return imageQueue.queuePromise(`https://uploads.scratch.mit.edu/users/avatars/${userId}.png`);
   });
 };
@@ -260,9 +264,11 @@ const getTranslate = async (language, text) => {
   if (!Object.prototype.hasOwnProperty.call(scratchTranslateExtensionLanguages, language)) return wrapError(new APIError.BadRequest('Unknown language'));
   if (typeof text !== 'string') return wrapError(new APIError.BadRequest('Invalid text'));
   const expires = HOUR * 24 * 90;
-  metrics.translate++;
   if (isMeaninglessTranslation(language, text)) {
-    metrics.translateMeaningless++;
+    metrics.cacheLookups.inc({
+      type: 'translate',
+      result: 'skipped'
+    });
     return wrapDatabaseResponse({
       status: 200,
       data: Buffer.from(JSON.stringify({
@@ -272,13 +278,12 @@ const getTranslate = async (language, text) => {
     });
   }
   const id = `translate/${language}/${text}`;
-  return computeIfMissing(id, (data) => {
+  return computeIfMissing('translate', id, (data) => {
     if (data) {
       return now() + HOUR * 24 * 30;
     }
     return now() + HOUR;
   }, () => {
-    metrics.translateNew++;
     return translateQueue.queuePromise(`https://translate-service.scratch.mit.edu/translate?language=${language}&text=${encodeURIComponent(text)}`);
   }, (error) => {
     return {
@@ -296,9 +301,8 @@ const getTTS = async (locale, gender, text) => {
   // Truncate the same as scratch-vm does
   text = text.substring(0, 128);
 
-  metrics.tts++;
   const id = `tts/${locale}/${gender}/${text}`;
-  return computeIfMissing(id, HOUR * 24 * 7, () => {
+  return computeIfMissing('tts', id, HOUR * 24 * 7, () => {
     return ttsQueue.queuePromise(`https://synthesis-service.scratch.mit.edu/synth?locale=${locale}&gender=${gender}&text=${encodeURIComponent(text)}`);
   });
 };
@@ -306,8 +310,7 @@ const getTTS = async (locale, gender, text) => {
 const getAsset = (md5ext) => {
   if (!ScratchUtils.isValidAssetMd5ext(md5ext)) return wrapError(new APIError.BadRequest('Invalid asset ID'));
   const id = `assets/${md5ext}`;
-  metrics.assets++;
-  return computeIfMissing(id, HOUR * 24, () => {
+  return computeIfMissing('assets', id, HOUR * 24, () => {
     return apiQueue.queuePromise(`https://assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`);
   });
 };
