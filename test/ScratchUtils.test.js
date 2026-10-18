@@ -1,42 +1,44 @@
 // @ts-nocheck
+const {test} = require('node:test');
+const assert = require('node:assert');
 const ScratchUtils = require('../src/lib/ScratchUtils');
 
 test('isValidUsername', () => {
-  expect(ScratchUtils.isValidUsername('griffpatch')).toBe(true);
-  expect(ScratchUtils.isValidUsername('30charcterusernamesarethelimit')).toBe(true);
-  expect(ScratchUtils.isValidUsername('30charcterusernamesarethelimit1')).toBe(false);
-  expect(ScratchUtils.isValidUsername('')).toBe(false);
-  expect(ScratchUtils.isValidUsername(' ')).toBe(false);
-  expect(ScratchUtils.isValidUsername('a')).toBe(false);
-  expect(ScratchUtils.isValidUsername('ab')).toBe(false);
-  expect(ScratchUtils.isValidUsername('abc')).toBe(true);
-  expect(ScratchUtils.isValidUsername('0123908345_-sdklfjlskjKLSDJF')).toBe(true);
-  expect(ScratchUtils.isValidUsername('sdflsj*')).toBe(false);
-  expect(ScratchUtils.isValidUsername('sdflsj(+ ')).toBe(false);
+  assert.strictEqual(ScratchUtils.isValidUsername('griffpatch'), true);
+  assert.strictEqual(ScratchUtils.isValidUsername('30charcterusernamesarethelimit'), true);
+  assert.strictEqual(ScratchUtils.isValidUsername('30charcterusernamesarethelimit1'), false);
+  assert.strictEqual(ScratchUtils.isValidUsername(''), false);
+  assert.strictEqual(ScratchUtils.isValidUsername(' '), false);
+  assert.strictEqual(ScratchUtils.isValidUsername('a'), false);
+  assert.strictEqual(ScratchUtils.isValidUsername('ab'), false);
+  assert.strictEqual(ScratchUtils.isValidUsername('abc'), true);
+  assert.strictEqual(ScratchUtils.isValidUsername('0123908345_-sdklfjlskjKLSDJF'), true);
+  assert.strictEqual(ScratchUtils.isValidUsername('sdflsj*'), false);
+  assert.strictEqual(ScratchUtils.isValidUsername('sdflsj(+ '), false);
 });
 
 test('isValidIdentifier', () => {
-  expect(ScratchUtils.isValidIdentifier('0')).toBe(true);
-  expect(ScratchUtils.isValidIdentifier('1')).toBe(true);
-  expect(ScratchUtils.isValidIdentifier('100000')).toBe(true);
-  expect(ScratchUtils.isValidIdentifier('999999999999999')).toBe(true);
-  expect(ScratchUtils.isValidIdentifier('3489934')).toBe(true);
-  expect(ScratchUtils.isValidIdentifier('-1')).toBe(false);
-  expect(ScratchUtils.isValidIdentifier('e')).toBe(false);
-  expect(ScratchUtils.isValidIdentifier('7.3')).toBe(false);
-  expect(ScratchUtils.isValidIdentifier(' ')).toBe(false);
-  expect(ScratchUtils.isValidIdentifier('')).toBe(false);
+  assert.strictEqual(ScratchUtils.isValidIdentifier('0'), true);
+  assert.strictEqual(ScratchUtils.isValidIdentifier('1'), true);
+  assert.strictEqual(ScratchUtils.isValidIdentifier('100000'), true);
+  assert.strictEqual(ScratchUtils.isValidIdentifier('999999999999999'), true);
+  assert.strictEqual(ScratchUtils.isValidIdentifier('3489934'), true);
+  assert.strictEqual(ScratchUtils.isValidIdentifier('-1'), false);
+  assert.strictEqual(ScratchUtils.isValidIdentifier('e'), false);
+  assert.strictEqual(ScratchUtils.isValidIdentifier('7.3'), false);
+  assert.strictEqual(ScratchUtils.isValidIdentifier(' '), false);
+  assert.strictEqual(ScratchUtils.isValidIdentifier(''), false);
 });
 
 test('isValidOffset', () => {
-  expect(ScratchUtils.isValidOffset('0')).toBe(true);
-  expect(ScratchUtils.isValidOffset('1')).toBe(true);
-  expect(ScratchUtils.isValidOffset('1.1')).toBe(false);
-  expect(ScratchUtils.isValidOffset('20')).toBe(true);
-  expect(ScratchUtils.isValidOffset('200')).toBe(true);
-  expect(ScratchUtils.isValidOffset('2000')).toBe(true);
-  expect(ScratchUtils.isValidOffset('20.0')).toBe(false);
-  expect(ScratchUtils.isValidOffset('-5')).toBe(false);
-  expect(ScratchUtils.isValidOffset('')).toBe(false);
-  expect(ScratchUtils.isValidOffset('egroij')).toBe(false);
+  assert.strictEqual(ScratchUtils.isValidOffset('0'), true);
+  assert.strictEqual(ScratchUtils.isValidOffset('1'), true);
+  assert.strictEqual(ScratchUtils.isValidOffset('1.1'), false);
+  assert.strictEqual(ScratchUtils.isValidOffset('20'), true);
+  assert.strictEqual(ScratchUtils.isValidOffset('200'), true);
+  assert.strictEqual(ScratchUtils.isValidOffset('2000'), true);
+  assert.strictEqual(ScratchUtils.isValidOffset('20.0'), false);
+  assert.strictEqual(ScratchUtils.isValidOffset('-5'), false);
+  assert.strictEqual(ScratchUtils.isValidOffset(''), false);
+  assert.strictEqual(ScratchUtils.isValidOffset('egroij'), false);
 });

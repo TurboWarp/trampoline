@@ -1,20 +1,22 @@
 // @ts-nocheck
+const {test} = require('node:test');
+const assert = require('node:assert');
 const APIError = require('../src/lib/APIError');
 
 // We'll just assume that APIError.BadRequest and the like have the correct magic numbers and strings in them.
 
 test('getMessage', () => {
-  expect(APIError.getMessage(new Error('Help!'))).toBe('Help!');
-  expect(APIError.getMessage('Help!')).toBe('Help!');
-  expect(APIError.getMessage(null)).toBe('null');
-  expect(APIError.getMessage(undefined)).toBe('undefined');
-  expect(APIError.getMessage({help: true})).toBe('[object Object]');
+  assert.strictEqual(APIError.getMessage(new Error('Help!')), 'Help!');
+  assert.strictEqual(APIError.getMessage('Help!'), 'Help!');
+  assert.strictEqual(APIError.getMessage(null), 'null');
+  assert.strictEqual(APIError.getMessage(undefined), 'undefined');
+  assert.strictEqual(APIError.getMessage({help: true}), '[object Object]');
 });
 
 test('getStatus', () => {
-  expect(APIError.getStatus(new Error(''))).toBe(500);
-  expect(APIError.getStatus('Hello')).toBe(500);
-  expect(APIError.getStatus(null)).toBe(500);
-  expect(APIError.getStatus(undefined)).toBe(500);
-  expect(APIError.getStatus({help: true})).toBe(500);
+  assert.strictEqual(APIError.getStatus(new Error('')), 500);
+  assert.strictEqual(APIError.getStatus('Hello'), 500);
+  assert.strictEqual(APIError.getStatus(null), 500);
+  assert.strictEqual(APIError.getStatus(undefined), 500);
+  assert.strictEqual(APIError.getStatus({help: true}), 500);
 });

@@ -1,3 +1,5 @@
+const {test, beforeEach} = require('node:test');
+const assert = require('node:assert');
 const supertest = require('supertest');
 const app = require('../src/server');
 const sharp = require('sharp');
@@ -22,58 +24,58 @@ test('project API', async () => {
   const res = await request.get('/api/projects/104')
     .expect('Content-Type', /json/)
     .expect(200);
-  expect(res.body.id).toBe(104);
-  expect(await cacheLookups('projects')).toBe(1);
+  assert.strictEqual(res.body.id, 104);
+  assert.strictEqual(await cacheLookups('projects'), 1);
 });
 
 test('project API (/proxy)', async () => {
   const res = await request.get('/proxy/projects/104')
     .expect('Content-Type', /json/)
     .expect(200);
-  expect(res.body.id).toBe(104);
-  expect(await cacheLookups('projects')).toBe(1);
+  assert.strictEqual(res.body.id, 104);
+  assert.strictEqual(await cacheLookups('projects'), 1);
 });
 
 test('user API', async () => {
   const res = await request.get('/api/users/griffpatch')
     .expect('Content-Type', /json/)
     .expect(200);
-  expect(res.body.id).toBe(1882674);
-  expect(await cacheLookups('users')).toBe(1);
+  assert.strictEqual(res.body.id, 1882674);
+  assert.strictEqual(await cacheLookups('users'), 1);
 });
 
 test('user API (/proxy)', async () => {
   const res = await request.get('/proxy/users/griffpatch')
     .expect('Content-Type', /json/)
     .expect(200);
-  expect(res.body.id).toBe(1882674);
-  expect(await cacheLookups('users')).toBe(1);
+  assert.strictEqual(res.body.id, 1882674);
+  assert.strictEqual(await cacheLookups('users'), 1);
 });
 
 test('studio projects', async () => {
   const firstPage = await request.get('/api/studios/15926401/projects?offset=0')
     .expect('Content-Type', /json/)
     .expect(200);
-  expect(Array.isArray(firstPage.body)).toBe(true);
-  expect(firstPage.body.length > 10).toBe(true);
-  expect(await cacheLookups('studio_pages')).toBe(1);
+  assert.ok(Array.isArray(firstPage.body));
+  assert.ok(firstPage.body.length > 10);
+  assert.strictEqual(await cacheLookups('studio_pages'), 1);
   const secondPage = await request.get('/api/studios/15926401/projects?offset=1')
     .expect(200);
-  expect(secondPage.body[0]).toEqual(firstPage.body[1]);
-  expect(await cacheLookups('studio_pages')).toBe(2);
+  assert.deepStrictEqual(secondPage.body[0], firstPage.body[1]);
+  assert.strictEqual(await cacheLookups('studio_pages'), 2);
 });
 
 test('studio projects (/proxy)', async () => {
   const firstPage = await request.get('/proxy/studios/15926401/projects?offset=0')
     .expect('Content-Type', /json/)
     .expect(200);
-  expect(Array.isArray(firstPage.body)).toBe(true);
-  expect(firstPage.body.length > 10).toBe(true);
-  expect(await cacheLookups('studio_pages')).toBe(1);
+  assert.ok(Array.isArray(firstPage.body));
+  assert.ok(firstPage.body.length > 10);
+  assert.strictEqual(await cacheLookups('studio_pages'), 1);
   const secondPage = await request.get('/proxy/studios/15926401/projects?offset=1')
     .expect(200);
-  expect(secondPage.body[0]).toEqual(firstPage.body[1]);
-  expect(await cacheLookups('studio_pages')).toBe(2);
+  assert.deepStrictEqual(secondPage.body[0], firstPage.body[1]);
+  assert.strictEqual(await cacheLookups('studio_pages'), 2);
 });
 
 const expectImage = (res, format, width, height) => {
@@ -125,7 +127,7 @@ test('thumbnails', async () => {
   await request.get('/thumbnails/1?width=240')
     .expect(200)
     .then((res) => expectImage(res, 'jpeg', 240, 360));
-  expect(await cacheLookups('thumbnails')).toBe(6);
+  assert.strictEqual(await cacheLookups('thumbnails'), 6);
 });
 
 test('avatars', async () => {
@@ -133,22 +135,22 @@ test('avatars', async () => {
     .expect('Content-Type', 'image/png')
     .expect(200)
     .then((res) => expectImage(res, 'png', 60, 60));
-  expect(await cacheLookups('avatars')).toBe(1);
+  assert.strictEqual(await cacheLookups('avatars'), 1);
 });
 
-test('avatars', async () => {
+test('avatars by username', async () => {
   await request.get('/avatars/by-username/TestMuffin')
     .expect('Content-Type', 'image/png')
     .expect(200)
     .then((res) => expectImage(res, 'png', 60, 60));
-  expect(await cacheLookups('users')).toBe(1);
-  expect(await cacheLookups('avatars')).toBe(1);
+  assert.strictEqual(await cacheLookups('users'), 1);
+  assert.strictEqual(await cacheLookups('avatars'), 1);
 });
 
 test('translate', async () => {
   const data = await request.get('/translate/translate?language=en&text=test')
     .expect('Content-Type', /json/)
     .expect(200);
-  expect(data.body.result).toBe('test');
-  expect(await cacheLookups('translate')).toBe(1);
+  assert.strictEqual(data.body.result, 'test');
+  assert.strictEqual(await cacheLookups('translate'), 1);
 });
